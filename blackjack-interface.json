@@ -1,0 +1,61 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/microsoft-bonsai-api/main/Reference/siminterface.schema.json",
+  "name": "blackjack-sim",
+  "timeout": 60,
+  "description": {
+    "action": {
+      "category": "Struct",
+      "fields": [
+        {
+          "name": "command",
+          "type": {
+            "category": "Number",
+            "start": 0,
+            "stop": 1,
+            "comment": "Whether to hit (1) or stay (0)."
+          }
+        }
+      ]
+    },
+    "state": {
+      "category": "Struct",
+      "fields": [
+        {
+          "name": "player",
+          "type": {
+            "category": "Number",
+            "comment": "Value of player's hand."
+          }
+        },
+        {
+          "name": "dealer",
+          "type": {
+            "category": "Number",
+            "comment": "Value of dealer's hand."
+          }
+        },
+        {
+          "name": "won",
+          "type": {
+            "category": "Number",
+            "comment": "1 for player's win, 0 otherwise"
+          }
+        },
+        {
+          "name": "lost",
+          "type": {
+            "category": "Number",
+            "comment": "1 for dealer's win, 0 otherwise"
+          }
+        },
+        {
+          "name": "draw",
+          "type": {
+            "category": "Number",
+            "comment": "1 for draw, 0 otherwise"
+          }
+        }
+      ]
+    }
+  }
+}
