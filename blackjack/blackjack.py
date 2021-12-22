@@ -1,3 +1,4 @@
+"""Simulation of Blackjack."""
 import itertools
 import dataclasses
 import random

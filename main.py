@@ -1,3 +1,5 @@
+"""Main connector to the Bonsai platform."""
+
 import json
 import os
 import time
