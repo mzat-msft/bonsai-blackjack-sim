@@ -7,7 +7,7 @@ from microsoft_bonsai_api.simulator.client import (BonsaiClient,
 from microsoft_bonsai_api.simulator.generated.models import (
     SimulatorInterface, SimulatorState)
 
-from blackjack import SimulatorModel
+from blackjack.blackjack import SimulatorModel
 
 
 def get_env_or_fail(key):
@@ -55,15 +55,15 @@ def main():
                 time.sleep(event.idle.callback_time)
             elif event.type == 'EpisodeStart':
                 sim_model_state = sim_model.reset()
-                print(sim_model_state)
             elif event.type == 'EpisodeStep':
-                sim_model_state = sim_model.step(event.episode_step.action)
-                print(sim_model_state)
+                sim_model_state = sim_model.step(
+                    event.episode_step.action['command']
+                )
             elif event.type == 'EpisodeFinish':
                 sim_model_state = {'sim_halted': False}
             elif event.type == 'Unregister':
                 print(
-                    "Simulator Session unregistered by platform because ",
+                    "Simulator Session unregistered by platform because of ",
                     event.unregister.details,
                 )
             print(time.strftime('%H:%M:%S'), event.type, sim_model_state)

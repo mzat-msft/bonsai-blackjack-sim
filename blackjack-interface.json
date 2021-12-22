@@ -12,6 +12,7 @@
             "category": "Number",
             "start": 0,
             "stop": 1,
+            "step": 1,
             "comment": "Whether to hit (1) or stay (0)."
           }
         }

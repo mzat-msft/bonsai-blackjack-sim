@@ -1,3 +1,4 @@
+import itertools
 import dataclasses
 import random
 from typing import List
@@ -7,16 +8,6 @@ from typing import List
 class Card:
     rank: str
     suit: str
-
-    def __radd__(self, other) -> int:
-        try:
-            value = int(self.rank)
-        except ValueError:
-            if self.rank in list('JQK'):
-                value = 10
-            else:
-                value = 11
-        return other + value
 
 
 class Deck:
@@ -53,17 +44,37 @@ class Hand:
 
     @property
     def value(self) -> int:
-        return sum(self.cards)  # type: ignore
+        aces = 0
+        cumulative = 0
+        for card in self.cards:
+            if card.rank in list('JQK'):
+                cumulative += 10
+            elif card.rank.isdigit():
+                cumulative += int(card.rank)
+            else:
+                aces += 1
+        if aces:
+            sums = []
+            min_overflow = None
+            for comb in itertools.combinations([1, 11] * aces, aces):
+                distance = 21 - sum(comb) - cumulative
+                if distance >= 0:
+                    sums.append(distance)
+                elif min_overflow is None or distance > min_overflow:
+                    min_overflow = distance
+            if sums:
+                return 21 - min(sums)
+            elif min_overflow:
+                return 21 - min_overflow
+            else:
+                raise RuntimeError('Impossible to determine hand value.')
+        return cumulative
 
 
 class Blackjack:
     def __init__(self):
         self.deck = Deck()
         self.player_hand = Hand(self.deck.pick(2))
-
-        if self.player_hand.value > 21:
-            raise GameOverException('Player exceeded 21.')
-
         self.dealer_hand = Hand(self.deck.pick())
 
     @property
@@ -74,6 +85,8 @@ class Blackjack:
         }
 
     def step(self, action):
+        if self.player_hand.value == 21:
+            raise WonGameException('Player won at opening.')
         if action == 'hit':
             self.player_hand.add(self.deck.pick())
             if self.player_hand.value > 21:
@@ -99,8 +112,8 @@ class Blackjack:
 
 
 action_mapping = {
-    '0': 'stay',
-    '1': 'hit',
+    0: 'stay',
+    1: 'hit',
 }
 
 
@@ -110,18 +123,31 @@ class SimulatorModel:
 
     def reset(self):
         self.blackjack = Blackjack()
-        return {'halted': False, **self.blackjack.state}
+        return {
+            'halted': False,
+            'won': False,
+            'lost': False,
+            'draw': False,
+            **self.blackjack.state
+        }
 
     def step(self, action):
         try:
-            self.blackjack(action_mapping[action])
+            self.blackjack.step(action_mapping[action])
+            return {
+                'halted': False,
+                'won': False,
+                'lost': False,
+                'draw': False,
+                **self.blackjack.state
+            }
         except GameOverException:
             return {
                 'halted': False,
                 'won': False,
                 'lost': True,
                 'draw': False,
-                **self.blackjack.state(),
+                **self.blackjack.state,
             }
         except DrawGameException:
             return {
@@ -129,7 +155,7 @@ class SimulatorModel:
                 'won': False,
                 'lost': False,
                 'draw': True,
-                **self.blackjack.state(),
+                **self.blackjack.state,
             }
         except WonGameException:
             return {
@@ -137,5 +163,5 @@ class SimulatorModel:
                 'won': True,
                 'lost': False,
                 'draw': False,
-                **self.blackjack.state(),
+                **self.blackjack.state,
             }
