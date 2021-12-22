@@ -12,15 +12,7 @@ from microsoft_bonsai_api.simulator.generated.models import (
 from blackjack.blackjack import SimulatorModel
 
 
-def get_env_or_fail(key):
-    val = os.getenv(key, None)
-    if val is None:
-        raise ValueError(f'You must provide {key} as env variable.')
-
-
 def main():
-    workspace = get_env_or_fail('SIM_WORKSPACE')
-    access_key = get_env_or_fail('SIM_ACCESS_KEY')
     client_config = BonsaiClientConfig()
     client = BonsaiClient(client_config)
 
