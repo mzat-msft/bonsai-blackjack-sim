@@ -6,8 +6,6 @@ This is a simplified version of blackjack with the following features:
 - Cards are picked from a french deck of infinite size, that is the
   probability of picking a card is always the same at each iteration.
 - At the first hand the player is given two cards and the dealer one
-- If the player has 21, the game ends irrespective on any action that
-  the player takes
 - At each step the player can choose whether to ``stay`` or ``hit``
 - If the player chooses ``hit``, the dealer picks a card for the player
 - The player can choose ``hit`` until the sum of cards is higher than 21,
@@ -112,8 +110,6 @@ class Blackjack:
         }
 
     def step(self, action):
-        if self.player_hand.value == 21:
-            raise WonGameException('Player won at opening.')
         if action == 'hit':
             self.player_hand.add(self.deck.pick())
             if self.player_hand.value > 21:
