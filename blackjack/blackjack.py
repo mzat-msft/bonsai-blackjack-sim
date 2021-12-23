@@ -152,9 +152,7 @@ class SimulatorModel:
         self.blackjack = Blackjack()
         return {
             'halted': False,
-            'won': False,
-            'lost': False,
-            'draw': False,
+            'result': -1,
             **self.blackjack.state
         }
 
@@ -163,32 +161,24 @@ class SimulatorModel:
             self.blackjack.step(action_mapping[action])
             return {
                 'halted': False,
-                'won': False,
-                'lost': False,
-                'draw': False,
+                'result': -1,
                 **self.blackjack.state
             }
         except GameOverException:
             return {
                 'halted': False,
-                'won': False,
-                'lost': True,
-                'draw': False,
+                'result': 0,
                 **self.blackjack.state,
             }
         except DrawGameException:
             return {
                 'halted': False,
-                'won': False,
-                'lost': False,
-                'draw': True,
+                'result': 1,
                 **self.blackjack.state,
             }
         except WonGameException:
             return {
                 'halted': False,
-                'won': True,
-                'lost': False,
-                'draw': False,
+                'result': 2,
                 **self.blackjack.state,
             }

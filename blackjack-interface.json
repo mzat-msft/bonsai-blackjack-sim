@@ -36,24 +36,13 @@
           }
         },
         {
-          "name": "won",
+          "name": "result",
           "type": {
             "category": "Number",
-            "comment": "1 for player's win, 0 otherwise"
-          }
-        },
-        {
-          "name": "lost",
-          "type": {
-            "category": "Number",
-            "comment": "1 for dealer's win, 0 otherwise"
-          }
-        },
-        {
-          "name": "draw",
-          "type": {
-            "category": "Number",
-            "comment": "1 for draw, 0 otherwise"
+            "start": -1,
+            "stop": 2,
+            "step": 1,
+            "comment": "The final result of the game"
           }
         }
       ]
