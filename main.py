@@ -45,7 +45,7 @@ class BonsaiConnector:
             body=reg_info,
         )
         self.sim_model = sim_model()
-        self.sim_model_state = {'halted': False}
+        self.sim_model_state = {}
         self.sequence_id = 1
 
     def next_event(self):
@@ -69,7 +69,7 @@ class BonsaiConnector:
             self.sim_model_state = self.sim_model.step(action)
             self.sim_model_state['action'] = action
         elif event.type == 'EpisodeFinish':
-            self.sim_model_state = {'sim_halted': False}
+            self.sim_model_state = {}
         elif event.type == 'Unregister':
             print(
                 "Simulator Session unregistered by platform because of ",

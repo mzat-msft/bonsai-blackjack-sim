@@ -147,7 +147,6 @@ class SimulatorModel:
     def reset(self):
         self.blackjack = Blackjack()
         return {
-            'halted': False,
             'result': -1,
             **self.blackjack.state
         }
@@ -156,25 +155,21 @@ class SimulatorModel:
         try:
             self.blackjack.step(action_mapping[action['command']])
             return {
-                'halted': False,
                 'result': -1,
                 **self.blackjack.state
             }
         except GameOverException:
             return {
-                'halted': False,
                 'result': 0,
                 **self.blackjack.state,
             }
         except DrawGameException:
             return {
-                'halted': False,
                 'result': 1,
                 **self.blackjack.state,
             }
         except WonGameException:
             return {
-                'halted': False,
                 'result': 2,
                 **self.blackjack.state,
             }
