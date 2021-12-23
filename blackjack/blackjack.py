@@ -154,7 +154,7 @@ class SimulatorModel:
 
     def step(self, action):
         try:
-            self.blackjack.step(action_mapping[action])
+            self.blackjack.step(action_mapping[action['command']])
             return {
                 'halted': False,
                 'result': -1,

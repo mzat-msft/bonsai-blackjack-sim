@@ -1,5 +1,4 @@
 """Main connector to the Bonsai platform."""
-
 import json
 import time
 
@@ -11,62 +10,92 @@ from microsoft_bonsai_api.simulator.generated.models import (
 from blackjack.blackjack import SimulatorModel
 
 
-def main():
-    client_config = BonsaiClientConfig()
-    client = BonsaiClient(client_config)
+class BonsaiConnector:
+    """
+    Class for connecting the sim to the Bonsai platform.
 
-    with open('blackjack-interface.json', 'r') as fp:
-        interface = json.load(fp)
-    reg_info = SimulatorInterface(
-        simulator_context=client_config.simulator_context,
-        **interface,
-    )
-    registered_session = client.session.create(
-        workspace_name=client_config.workspace,
-        body=reg_info,
-    )
+    Parameters
+    ----------
+    if_json: str or Path
+        A json file containing all information concerning
+        the simulation. It must contain at least a ``name``
+        and ``timeout`` field.
+    sim_model: object
+        A class that wraps the simulation.
 
-    sequence_id = 1
+    The sim_model must have some methods available for the
+    connector to work correctly
+    - ``get_state``: must return the state of the simulation as dict.
+    - ``step``: perform a sim iteration. Must accept an action.
+    - ``reset``: reset the simulation and start a new episode.
+    """
+    def __init__(self, if_json, sim_model):
+        with open(if_json, 'r') as fp:
+            interface = json.load(fp)
+        client_config = BonsaiClientConfig()
+        self.workspace = client_config.workspace
+        self.client = BonsaiClient(client_config)
 
-    sim_model = SimulatorModel()
-    sim_model_state = {'halted': False}
-
-    try:
-        while True:
-            sim_state = SimulatorState(
-                sequence_id=sequence_id,
-                state=sim_model_state,
-                halted=sim_model_state.get('halted', False),
-            )
-            event = client.session.advance(
-                workspace_name=client_config.workspace,
-                session_id=registered_session.session_id,
-                body=sim_state,
-            )
-            sequence_id = event.sequence_id
-            if event.type == 'Idle':
-                time.sleep(event.idle.callback_time)
-            elif event.type == 'EpisodeStart':
-                sim_model_state = sim_model.reset()
-            elif event.type == 'EpisodeStep':
-                action = event.episode_step.action['command']
-                sim_model_state = sim_model.step(action)
-                sim_model_state['action'] = action
-            elif event.type == 'EpisodeFinish':
-                sim_model_state = {'sim_halted': False}
-            elif event.type == 'Unregister':
-                print(
-                    "Simulator Session unregistered by platform because of ",
-                    event.unregister.details,
-                )
-            print(time.strftime('%H:%M:%S'), event.type, sim_model_state)
-
-    except Exception as e:
-        client.session.delete(
-            workspace_name=client_config.workspace,
-            session_id=registered_session.session_id,
+        reg_info = SimulatorInterface(
+            simulator_context=client_config.simulator_context,
+            **interface,
         )
-        raise RuntimeError('Error in event loop') from e
+        self.registered_session = self.client.session.create(
+            workspace_name=client_config.workspace,
+            body=reg_info,
+        )
+        self.sim_model = sim_model()
+        self.sim_model_state = {'halted': False}
+        self.sequence_id = 1
+
+    def next_event(self):
+        sim_state = SimulatorState(
+            sequence_id=self.sequence_id,
+            state=self.sim_model_state,
+            halted=self.sim_model_state.get('halted', False),
+        )
+        event = self.client.session.advance(
+            workspace_name=self.workspace,
+            session_id=self.registered_session.session_id,
+            body=sim_state,
+        )
+        self.sequence_id = event.sequence_id
+        if event.type == 'Idle':
+            time.sleep(event.idle.callback_time)
+        elif event.type == 'EpisodeStart':
+            self.sim_model_state = self.sim_model.reset()
+        elif event.type == 'EpisodeStep':
+            action = event.episode_step.action
+            self.sim_model_state = self.sim_model.step(action)
+            self.sim_model_state['action'] = action
+        elif event.type == 'EpisodeFinish':
+            self.sim_model_state = {'sim_halted': False}
+        elif event.type == 'Unregister':
+            print(
+                "Simulator Session unregistered by platform because of ",
+                event.unregister.details,
+            )
+        print(time.strftime('%H:%M:%S'), event.type, self.sim_model_state)
+
+    def close_session(self):
+        self.client.session.delete(
+            workspace_name=self.workspace,
+            session_id=self.registered_session.session_id,
+        )
+
+
+def main():
+    bonsai_conn = BonsaiConnector(
+        'blackjack-interface.json',
+        SimulatorModel,
+    )
+
+    while True:
+        try:
+            bonsai_conn.next_event()
+        except Exception as e:
+            bonsai_conn.close_session()
+            raise RuntimeError('Error in event loop') from e
 
 
 if __name__ == '__main__':
