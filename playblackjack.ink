@@ -7,12 +7,16 @@ type SimState {
     player: number,
     # Value of dealer's hand.
     dealer: number,
-    # 1 for player's win, 0 otherwise
-    won: number,
-    # 1 for dealer's win, 0 otherwise
-    lost: number,
-    # 1 for draw, 0 otherwise
-    draw: number,
+    # The final result of the game
+    result: number,
+}
+
+# Remove result from state as it is useless for the brain
+type ObservableState {
+    # Value of player's hand.
+    player: number,
+    # Value of dealer's hand.
+    dealer: number,
 }
 
 using Math
@@ -31,10 +35,10 @@ simulator Simulator(action: SimAction): SimState {
 
 # Winning gives reward 1, Losing -100 and draw 0
 function Reward(obs: SimState) {
-    if (obs.won == 1) {
+    if (obs.result == 2) {
         return 1
     }
-    else if (obs.lost == 1) {
+    else if (obs.result == 0) {
         return -100
     }
     return 0
@@ -42,13 +46,13 @@ function Reward(obs: SimState) {
 
 # Terminate when game ends
 function Terminal(obs: SimState) {
-    if (obs.won == 1 or obs.lost == 1 or obs.draw == 1) {
-        return true
+    if (obs.result < 0) {
+        return false
     }
-    return false
+    return true
 }
 
-graph (input: SimState): SimAction {
+graph (input: ObservableState): SimAction {
     concept PlayBlackjack(input): SimAction {
         curriculum {
             source Simulator
