@@ -1,7 +1,6 @@
 """Main connector to the Bonsai platform."""
 
 import json
-import os
 import time
 
 from microsoft_bonsai_api.simulator.client import (BonsaiClient,
@@ -50,9 +49,9 @@ def main():
             elif event.type == 'EpisodeStart':
                 sim_model_state = sim_model.reset()
             elif event.type == 'EpisodeStep':
-                sim_model_state = sim_model.step(
-                    event.episode_step.action['command']
-                )
+                action = event.episode_step.action['command']
+                sim_model_state = sim_model.step(action)
+                sim_model_state['action'] = action
             elif event.type == 'EpisodeFinish':
                 sim_model_state = {'sim_halted': False}
             elif event.type == 'Unregister':
