@@ -25,7 +25,6 @@ class BonsaiConnector:
 
     The sim_model must have some methods available for the
     connector to work correctly
-    - ``get_state``: must return the state of the simulation as dict.
     - ``step``: perform a sim iteration. Must accept an action.
     - ``reset``: reset the simulation and start a new episode.
     """
