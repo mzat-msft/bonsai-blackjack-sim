@@ -11,9 +11,9 @@
           "type": {
             "category": "Number",
             "start": 0,
-            "stop": 1,
+            "stop": 2,
             "step": 1,
-            "comment": "Whether to hit (1) or stay (0)."
+            "comment": "Whether to stay (0), hit (1) or double-down (2)."
           }
         }
       ]

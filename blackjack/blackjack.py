@@ -6,13 +6,18 @@ This is a simplified version of blackjack with the following features:
 - Cards are picked from a french deck of infinite size, that is the
   probability of picking a card is always the same at each iteration.
 - At the first hand the player is given two cards and the dealer one
-- At each step the player can choose whether to ``stay`` or ``hit``
+- At each step the player chooses whether to ``stay``, ``hit`` or ``double``.
 - If the player chooses ``hit``, the dealer picks a card for the player
 - The player can choose ``hit`` until the sum of cards is higher than 21,
   in that case the player loses
 - When the player ``stay`` the dealer picks a card for itself and the value of
   player and dealer hands are counted
+- If the player chooses to ``double``, one card is added to its hand and the
+  game continues as if he selects ``stay``. In case the player wins, the reward
+  should be higher than for a normal win.
 - Who has a hand closer to 21 wins the game, if both have 21 the game is a draw
+
+TODO: Forbid choosing ``double`` after first move.
 """
 import itertools
 import dataclasses
@@ -46,7 +51,15 @@ class GameOverException(Exception):
     pass
 
 
+class GameOverDoubleException(Exception):
+    pass
+
+
 class GameWonException(Exception):
+    pass
+
+
+class GameWonDoubleException(Exception):
     pass
 
 
@@ -107,6 +120,7 @@ class Blackjack:
         self.deck = Deck()
         self.player_hand = Hand(self.deck.pick(2))
         self.dealer_hand = Hand(self.deck.pick())
+        self.double = False
 
     @property
     def state(self):
@@ -115,33 +129,51 @@ class Blackjack:
             'dealer': self.dealer_hand.value,
         }
 
+    def win(self):
+        if self.double:
+            raise GameWonDoubleException(
+                f'Player won double with {self.player_hand.value} against {self.dealer_hand.value}'
+            )
+        raise GameWonException(
+            f'Player won with {self.player_hand.value} against {self.dealer_hand.value}'
+        )
+
+    def lose(self):
+        if self.double:
+            raise GameOverDoubleException(
+                f'Player lost double with {self.player_hand.value} against {self.dealer_hand.value}'
+            )
+        raise GameOverException(
+            f'Player lost with {self.player_hand.value} against {self.dealer_hand.value}'
+        )
+
     def finalize_game(self):
-        """Run this function when no other player's action are possible."""
+        """Run this function when no other player action is possible."""
         while self.dealer_hand.value < 17:
             self.dealer_hand.add(self.deck.pick())
         player = self.player_hand.value
         dealer = self.dealer_hand.value
         if player > dealer or dealer > 21:
-            raise GameWonException(
-                f'Player won with {player} against {dealer}'
-            )
+            self.win()
         elif player == dealer:
             raise GameDrawException(
                 f'Draw with {player}'
             )
         else:
-            raise GameOverException(
-                f'Player lost with {player} against {dealer}'
-            )
+            self.lose()
 
     def player_pick(self):
         self.player_hand.add(self.deck.pick())
         if self.player_hand.value > 21:
-            raise GameOverException('Player exceeded 21.')
+            self.lose()
 
     def step(self, action):
         if action == 'hit':
             self.player_pick()
+        elif action == 'double':
+            self.double = True
+            self.player_pick()
+            self.finalize_game()
         elif action == 'stay':
             self.finalize_game()
 
@@ -149,6 +181,7 @@ class Blackjack:
 action_mapping = {
     0: 'stay',
     1: 'hit',
+    2: 'double',
 }
 
 
@@ -183,5 +216,15 @@ class SimulatorModel:
         except GameWonException:
             return {
                 'result': 2,
+                **self.blackjack.state,
+            }
+        except GameWonDoubleException:
+            return {
+                'result': 3,
+                **self.blackjack.state,
+            }
+        except GameOverDoubleException:
+            return {
+                'result': 4,
                 **self.blackjack.state,
             }

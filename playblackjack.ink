@@ -23,24 +23,34 @@ using Math
 using Goal
 
 
-# 0 -> Stay, 1 -> Hit
+# 0 -> Stay, 1 -> Hit, 2 -> Double
 type SimAction {
-    # Whether to hit (1) or stay (0).
-    command: number<0 .. 1 step 1>,
+    # Whether to stay (0), hit (1) or double-down (2).
+    command: number<0 .. 2 step 1>,
 }
 
 simulator Simulator(action: SimAction): SimState {
     package "Blackjack"
 }
 
-# Winning gives reward 1, Losing -100 and draw 0
 function Reward(obs: SimState) {
+    # Normal win
     if (obs.result == 2) {
         return 1
     }
+    # Win after double
+    else if (obs.result == 3) {
+	return 2
+    }
+    # Lose
     else if (obs.result == 0) {
         return -100
     }
+    # Lose after double
+    else if (obs.result == 4) {
+        return -200
+    }
+    # Draw
     return 0
 }
 

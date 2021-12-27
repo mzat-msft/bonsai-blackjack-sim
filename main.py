@@ -96,6 +96,8 @@ def get_reward(results):
         0: -100,
         1: 0,
         2: 1,
+        3: 2,
+        4: -200,
     }
     counter = collections.Counter(results)
     reward = 0
@@ -107,7 +109,7 @@ def get_reward(results):
 
 
 def random_policy(state):
-    return {'command': random.choice([0, 1])}
+    return {'command': random.choice([0, 1, 2])}
 
 
 def test_policy(n_games, policy):
