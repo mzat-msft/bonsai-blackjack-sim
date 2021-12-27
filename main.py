@@ -1,4 +1,5 @@
 """Main connector to the Bonsai platform."""
+import argparse
 import collections
 import json
 import random
@@ -10,6 +11,11 @@ from microsoft_bonsai_api.simulator.generated.models import (
     SimulatorInterface, SimulatorState)
 
 from blackjack.blackjack import SimulatorModel
+
+
+parser = argparse.ArgumentParser(description="Run a simulation")
+parser.add_argument('-p', '--policy', choices=['random'])
+parser.add_argument('-e', '--episodes', type=int, default=100)
 
 
 class BonsaiConnector:
@@ -105,19 +111,25 @@ def random_policy(state):
 
 
 def test_policy(n_games, policy):
+    if policy == 'random':
+        f_policy = random_policy
+    else:
+        raise ValueError(f'Policy {policy} not found.')
+    print(f'Using {policy} policy.')
+
     model = SimulatorModel()
     results = []
     for game in range(n_games):
         state = model.reset()
         while state['result'] < 0:
-            state = model.step(policy(state))
+            state = model.step(f_policy(state))
             if state['result'] >= 0:
                 results.append(state['result'])
     reward = get_reward(results)
     print(reward)
 
 
-def main():
+def run_interface():
     bonsai_conn = BonsaiConnector(
         'blackjack-interface.json',
         SimulatorModel,
@@ -129,6 +141,14 @@ def main():
         except Exception as e:
             bonsai_conn.close_session()
             raise RuntimeError('Error in event loop') from e
+
+
+def main():
+    args = parser.parse_args()
+    if args.policy:
+        test_policy(args.episodes, args.policy)
+    else:
+        run_interface()
 
 
 if __name__ == '__main__':
