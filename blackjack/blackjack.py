@@ -25,6 +25,9 @@ class Card:
     rank: str
     suit: str
 
+    def __repr__(self):
+        return f"Card({self.rank}, {self.suit})"
+
 
 class Deck:
     ranks = [str(n) for n in range(2, 11)] + list('JQKA')
@@ -57,6 +60,9 @@ class Hand:
 
     def add(self, cards: List[Card]):
         self.cards.extend(cards)
+
+    def __repr__(self):
+        return "[" + ", ".join(str(card) for card in self.cards) + "]"
 
     @property
     def value(self) -> int:
