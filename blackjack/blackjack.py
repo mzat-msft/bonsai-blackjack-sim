@@ -43,11 +43,11 @@ class GameOverException(Exception):
     pass
 
 
-class WonGameException(Exception):
+class GameWonException(Exception):
     pass
 
 
-class DrawGameException(Exception):
+class GameDrawException(Exception):
     pass
 
 
@@ -121,11 +121,11 @@ class Blackjack:
             player = self.player_hand.value
             dealer = self.dealer_hand.value
             if player > dealer or dealer > 21:
-                raise WonGameException(
+                raise GameWonException(
                     f'Player won with {player} against {dealer}'
                 )
             elif player == dealer:
-                raise DrawGameException(
+                raise GameDrawException(
                     f'Draw with {player}'
                 )
             else:
@@ -163,12 +163,12 @@ class SimulatorModel:
                 'result': 0,
                 **self.blackjack.state,
             }
-        except DrawGameException:
+        except GameDrawException:
             return {
                 'result': 1,
                 **self.blackjack.state,
             }
-        except WonGameException:
+        except GameWonException:
             return {
                 'result': 2,
                 **self.blackjack.state,
