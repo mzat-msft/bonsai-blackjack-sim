@@ -115,29 +115,32 @@ class Blackjack:
             'dealer': self.dealer_hand.value,
         }
 
+    def finalize_game(self):
+        """Run this function when no other player's action are possible."""
+        while self.dealer_hand.value < 17:
+            self.dealer_hand.add(self.deck.pick())
+        player = self.player_hand.value
+        dealer = self.dealer_hand.value
+        if player > dealer or dealer > 21:
+            raise GameWonException(
+                f'Player won with {player} against {dealer}'
+            )
+        elif player == dealer:
+            raise GameDrawException(
+                f'Draw with {player}'
+            )
+        else:
+            raise GameOverException(
+                f'Player lost with {player} against {dealer}'
+            )
+
     def step(self, action):
         if action == 'hit':
             self.player_hand.add(self.deck.pick())
             if self.player_hand.value > 21:
                 raise GameOverException('Player exceeded 21.')
         elif action == 'stay':
-            while self.dealer_hand.value < 17:
-                self.dealer_hand.add(self.deck.pick())
-
-            player = self.player_hand.value
-            dealer = self.dealer_hand.value
-            if player > dealer or dealer > 21:
-                raise GameWonException(
-                    f'Player won with {player} against {dealer}'
-                )
-            elif player == dealer:
-                raise GameDrawException(
-                    f'Draw with {player}'
-                )
-            else:
-                raise GameOverException(
-                    f'Player lost with {player} against {dealer}'
-                )
+            self.finalize_game()
 
 
 action_mapping = {
