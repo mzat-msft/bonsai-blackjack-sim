@@ -1,5 +1,7 @@
 """Main connector to the Bonsai platform."""
+import collections
 import json
+import random
 import time
 
 from microsoft_bonsai_api.simulator.client import (BonsaiClient,
@@ -81,6 +83,38 @@ class BonsaiConnector:
             workspace_name=self.workspace,
             session_id=self.registered_session.session_id,
         )
+
+
+def get_reward(results):
+    reward_mapping = {
+        0: -100,
+        1: 0,
+        2: 1,
+    }
+    counter = collections.Counter(results)
+    reward = 0
+    total = 0
+    for elem, cnt in counter.items():
+        total += cnt
+        reward += reward_mapping[elem] * cnt
+    return reward / total
+
+
+def random_policy(state):
+    return {'command': random.choice([0, 1])}
+
+
+def test_policy(n_games, policy):
+    model = SimulatorModel()
+    results = []
+    for game in range(n_games):
+        state = model.reset()
+        while state['result'] < 0:
+            state = model.step(policy(state))
+            if state['result'] >= 0:
+                results.append(state['result'])
+    reward = get_reward(results)
+    print(reward)
 
 
 def main():
