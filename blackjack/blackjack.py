@@ -134,11 +134,14 @@ class Blackjack:
                 f'Player lost with {player} against {dealer}'
             )
 
+    def player_pick(self):
+        self.player_hand.add(self.deck.pick())
+        if self.player_hand.value > 21:
+            raise GameOverException('Player exceeded 21.')
+
     def step(self, action):
         if action == 'hit':
-            self.player_hand.add(self.deck.pick())
-            if self.player_hand.value > 21:
-                raise GameOverException('Player exceeded 21.')
+            self.player_pick()
         elif action == 'stay':
             self.finalize_game()
 
