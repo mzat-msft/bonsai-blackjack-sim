@@ -36,7 +36,7 @@ class Card:
 
 class Deck:
     ranks = [str(n) for n in range(2, 11)] + list('JQKA')
-    suits = 'spades diamonds clubs hearts'.split()
+    suits = '♠ ♥ ♦ ♣'.split()
 
     def __init__(self):
         self.cards = [
