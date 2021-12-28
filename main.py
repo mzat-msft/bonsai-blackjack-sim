@@ -14,7 +14,7 @@ from blackjack.blackjack import SimulatorModel
 
 
 parser = argparse.ArgumentParser(description="Run a simulation")
-parser.add_argument('-p', '--policy', choices=['random'])
+parser.add_argument('-p', '--policy', choices=['random', 'player'])
 parser.add_argument('-e', '--episodes', type=int, default=100)
 
 
@@ -112,9 +112,23 @@ def random_policy(state):
     return {'command': random.choice([0, 1, 2])}
 
 
+def player_policy(state):
+    action = -1
+    while action not in range(3):
+        try:
+            action = int(input('Select action: 0 (Stay), 1 (Hit), 2 (Double)'))
+        except ValueError:
+            pass
+    return {'command': int(action)}
+
+
 def test_policy(n_games, policy):
+    print_state = False
     if policy == 'random':
         f_policy = random_policy
+    elif policy == 'player':
+        f_policy = player_policy
+        print_state = True
     else:
         raise ValueError(f'Policy {policy} not found.')
     print(f'Using {policy} policy.')
@@ -123,10 +137,14 @@ def test_policy(n_games, policy):
     results = []
     for game in range(n_games):
         state = model.reset()
+        if print_state:
+            print(state)
         while state['result'] < 0:
             state = model.step(f_policy(state))
             if state['result'] >= 0:
                 results.append(state['result'])
+            if print_state:
+                print(state)
     reward = get_reward(results)
     print(reward)
 
