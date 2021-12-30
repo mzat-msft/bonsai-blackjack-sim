@@ -93,11 +93,12 @@ class BonsaiConnector:
 
 def get_reward(results):
     reward_mapping = {
-        0: -100,
-        1: 0,
-        2: 1,
-        3: 2,
-        4: -200,
+        (0, False): -100,
+        (0, True): -200,
+        (1, False): 0,
+        (1, True): 0,
+        (2, False): 1,
+        (2, True): 2,
     }
     counter = collections.Counter(results)
     reward = 0
@@ -142,7 +143,7 @@ def test_policy(n_games, policy):
         while state['result'] < 0:
             state = model.step(f_policy(state))
             if state['result'] >= 0:
-                results.append(state['result'])
+                results.append((state['result'], state['double']))
             if print_state:
                 print(state)
     reward = get_reward(results)

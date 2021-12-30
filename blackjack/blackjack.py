@@ -51,15 +51,7 @@ class GameOverException(Exception):
     pass
 
 
-class GameOverDoubleException(Exception):
-    pass
-
-
 class GameWonException(Exception):
-    pass
-
-
-class GameWonDoubleException(Exception):
     pass
 
 
@@ -116,35 +108,31 @@ class Hand:
 
 
 class Blackjack:
+    double: bool = False
+
     def __init__(self):
         self.deck = Deck()
         self.player_hand = Hand(self.deck.pick(2))
         self.dealer_hand = Hand(self.deck.pick())
-        self.double = False
 
     @property
     def state(self):
         return {
             'player': self.player_hand.value,
             'dealer': self.dealer_hand.value,
+            'double': self.double,
         }
 
     def win(self):
-        if self.double:
-            raise GameWonDoubleException(
-                f'Player won double with {self.player_hand.value} against {self.dealer_hand.value}'
-            )
         raise GameWonException(
-            f'Player won with {self.player_hand.value} against {self.dealer_hand.value}'
+            f'Player won with {self.player_hand.value}',
+            f' against {self.dealer_hand.value}',
         )
 
     def lose(self):
-        if self.double:
-            raise GameOverDoubleException(
-                f'Player lost double with {self.player_hand.value} against {self.dealer_hand.value}'
-            )
         raise GameOverException(
-            f'Player lost with {self.player_hand.value} against {self.dealer_hand.value}'
+            f'Player lost with {self.player_hand.value}',
+            f' against {self.dealer_hand.value}',
         )
 
     def finalize_game(self):
@@ -216,15 +204,5 @@ class SimulatorModel:
         except GameWonException:
             return {
                 'result': 2,
-                **self.blackjack.state,
-            }
-        except GameWonDoubleException:
-            return {
-                'result': 3,
-                **self.blackjack.state,
-            }
-        except GameOverDoubleException:
-            return {
-                'result': 4,
                 **self.blackjack.state,
             }

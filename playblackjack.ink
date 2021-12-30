@@ -34,21 +34,23 @@ simulator Simulator(action: SimAction): SimState {
 }
 
 function Reward(obs: SimState) {
-    # Normal win
+    # Win
     if (obs.result == 2) {
-        return 1
-    }
-    # Win after double
-    else if (obs.result == 3) {
-	return 2
+        if (obs.double == 1) {
+            return 2
+        }
+        else {
+            return 1
+        }
     }
     # Lose
     else if (obs.result == 0) {
-        return -100
-    }
-    # Lose after double
-    else if (obs.result == 4) {
-        return -200
+        if (obs.double == 1) {
+            return -200
+        }
+        else {
+            return -100
+        }
     }
     # Draw
     return 0

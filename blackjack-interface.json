@@ -42,7 +42,17 @@
             "start": -1,
             "stop": 2,
             "step": 1,
-            "comment": "The final result of the game"
+            "comment": "The final result of the game."
+          }
+        },
+        {
+          "name": "double",
+          "type": {
+            "category": "Number",
+            "start": 0,
+            "stop": 1,
+            "step": 1,
+            "comment": "Whether player doubled."
           }
         }
       ]
