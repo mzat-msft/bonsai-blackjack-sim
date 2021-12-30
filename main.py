@@ -74,7 +74,6 @@ class BonsaiConnector:
         elif event.type == 'EpisodeStep':
             action = event.episode_step.action
             self.sim_model_state = self.sim_model.step(action)
-            self.sim_model_state['action'] = action
         elif event.type == 'EpisodeFinish':
             self.sim_model_state = {}
         elif event.type == 'Unregister':
