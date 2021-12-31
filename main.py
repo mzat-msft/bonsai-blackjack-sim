@@ -1,9 +1,11 @@
 """Main connector to the Bonsai platform."""
 import argparse
 import collections
+import functools
 import json
 import random
 import time
+from collections.abc import Sequence
 
 from microsoft_bonsai_api.simulator.client import (BonsaiClient,
                                                    BonsaiClientConfig)
@@ -12,9 +14,11 @@ from microsoft_bonsai_api.simulator.generated.models import (
 
 from blackjack.blackjack import SimulatorModel
 
+AVAILABLE_POLICIES = ['random', 'random_conservative', 'player']
+
 
 parser = argparse.ArgumentParser(description="Run a simulation")
-parser.add_argument('-p', '--policy', choices=['random', 'player'])
+parser.add_argument('-p', '--policy', choices=AVAILABLE_POLICIES)
 parser.add_argument('-e', '--episodes', type=int, default=100)
 
 
@@ -108,8 +112,8 @@ def get_reward(results):
     return reward / total
 
 
-def random_policy(state):
-    return {'command': random.choice([0, 1, 2])}
+def random_policy(state, choices: Sequence):
+    return {'command': random.choice(choices)}
 
 
 def player_policy(state):
@@ -125,7 +129,9 @@ def player_policy(state):
 def test_policy(n_games, policy):
     print_state = False
     if policy == 'random':
-        f_policy = random_policy
+        f_policy = functools.partial(random_policy, choices=(0, 1, 2))
+    elif policy == 'random_conservative':
+        f_policy = functools.partial(random_policy, choices=(0, 1))
     elif policy == 'player':
         f_policy = player_policy
         print_state = True
