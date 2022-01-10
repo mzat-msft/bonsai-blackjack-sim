@@ -7,8 +7,14 @@ type SimState {
     player: number,
     # Value of dealer's hand.
     dealer: number,
-    # The final result of the game
+    # The final result of the game.
     result: number,
+    # Whether player doubled.
+    double: number <0, 1,>,
+    # Whether player has aces.
+    player_ace: number <0, 1,>,
+    # Whether dealer has aces.
+    dealer_ace: number <0, 1,>,
 }
 
 # Remove result from state as it is useless for the brain
@@ -17,6 +23,10 @@ type ObservableState {
     player: number,
     # Value of dealer's hand.
     dealer: number,
+    # Whether player has aces.
+    player_ace: number <0, 1,>,
+    # Whether dealer has aces.
+    dealer_ace: number <0, 1,>,
 }
 
 using Math

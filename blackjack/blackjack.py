@@ -69,6 +69,9 @@ class Hand:
     def __repr__(self):
         return "[" + ", ".join(str(card) for card in self.cards) + "]"
 
+    def has_ace(self):
+        return any(card.rank == 'A' for card in self.cards)
+
     @property
     def value(self) -> int:
         """
@@ -121,6 +124,8 @@ class Blackjack:
             'player': self.player_hand.value,
             'dealer': self.dealer_hand.value,
             'double': self.double,
+            'player_ace': self.player_hand.has_ace(),
+            'dealer_ace': self.dealer_hand.has_ace(),
         }
 
     def win(self):

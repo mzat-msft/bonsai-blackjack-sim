@@ -54,6 +54,26 @@
             "step": 1,
             "comment": "Whether player doubled."
           }
+        },
+        {
+          "name": "player_ace",
+          "type": {
+            "category": "Number",
+            "start": 0,
+            "stop": 1,
+            "step": 1,
+            "comment": "Whether player has aces."
+          }
+        },
+        {
+          "name": "dealer_ace",
+          "type": {
+            "category": "Number",
+            "start": 0,
+            "stop": 1,
+            "step": 1,
+            "comment": "Whether dealer has aces."
+          }
         }
       ]
     }
