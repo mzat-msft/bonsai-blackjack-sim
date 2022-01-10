@@ -20,3 +20,8 @@ hands = [
 @pytest.mark.parametrize("test_input, expected", hands)
 def test_hand_value(test_input, expected):
     assert test_input.value == expected
+
+
+def test_hand_value_raises_valueerror():
+    with pytest.raises(ValueError):
+        Hand([Card('F', 'x')]).value
