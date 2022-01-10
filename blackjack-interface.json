@@ -10,10 +10,21 @@
           "name": "command",
           "type": {
             "category": "Number",
-            "start": 0,
-            "stop": 2,
-            "step": 1,
-            "comment": "Whether to stay (0), hit (1) or double-down (2)."
+            "namedValues": [
+              {
+                "name": "Stay",
+                "value": 0
+              },
+              {
+                "name": "Hit",
+                "value": 1
+              },
+              {
+                "name": "Double-down",
+                "value": 2
+              }
+            ],
+            "comment": "The available actions for the agent."
           }
         }
       ]
@@ -39,9 +50,24 @@
           "name": "result",
           "type": {
             "category": "Number",
-            "start": -1,
-            "stop": 2,
-            "step": 1,
+            "namedValues": [
+              {
+                "name": "Play",
+                "value": -1
+              },
+              {
+                "name": "Lost",
+                "value": 0
+              },
+              {
+                "name": "Draw",
+                "value": 1
+              },
+              {
+                "name": "Won",
+                "value": 2
+              }
+            ],
             "comment": "The final result of the game."
           }
         },
@@ -49,9 +75,7 @@
           "name": "double",
           "type": {
             "category": "Number",
-            "start": 0,
-            "stop": 1,
-            "step": 1,
+            "values": [0, 1],
             "comment": "Whether player doubled."
           }
         },
@@ -59,9 +83,7 @@
           "name": "player_ace",
           "type": {
             "category": "Number",
-            "start": 0,
-            "stop": 1,
-            "step": 1,
+            "values": [0, 1],
             "comment": "Whether player has aces."
           }
         },
@@ -69,9 +91,7 @@
           "name": "dealer_ace",
           "type": {
             "category": "Number",
-            "start": 0,
-            "stop": 1,
-            "step": 1,
+            "values": [0, 1],
             "comment": "Whether dealer has aces."
           }
         }

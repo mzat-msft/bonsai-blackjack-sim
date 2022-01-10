@@ -8,7 +8,7 @@ type SimState {
     # Value of dealer's hand.
     dealer: number,
     # The final result of the game.
-    result: number,
+    result: number<Play = -1, Lost = 0, Draw = 1, Won = 2>,
     # Whether player doubled.
     double: number <0, 1,>,
     # Whether player has aces.
@@ -35,8 +35,8 @@ using Goal
 
 # 0 -> Stay, 1 -> Hit, 2 -> Double
 type SimAction {
-    # Whether to stay (0), hit (1) or double-down (2).
-    command: number<0 .. 2 step 1>,
+    # The available actions for the agent.
+    command: number<Stay = 0, Hit = 1, `Double-down` = 2>,
 }
 
 simulator Simulator(action: SimAction): SimState {
