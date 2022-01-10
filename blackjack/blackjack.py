@@ -90,8 +90,10 @@ class Hand:
                 cumulative += 10
             elif card.rank.isdigit():
                 cumulative += int(card.rank)
-            else:
+            elif card.rank == 'A':
                 aces += 1
+            else:
+                raise ValueError(f'Card rank unknown: {card.rank}')
         if aces:
             sums = []
             min_overflow = None
