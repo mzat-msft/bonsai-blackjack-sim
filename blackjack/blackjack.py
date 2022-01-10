@@ -22,7 +22,7 @@ TODO: Forbid choosing ``double`` after first move.
 import itertools
 import dataclasses
 import random
-from typing import List
+from typing import Iterable, Sequence
 
 
 @dataclasses.dataclass
@@ -43,7 +43,7 @@ class Deck:
             Card(rank, suit) for suit in self.suits for rank in self.ranks
         ]
 
-    def pick(self, n=1) -> List[Card]:
+    def pick(self, n=1) -> Sequence[Card]:
         return random.choices(self.cards, k=n)
 
 
@@ -60,10 +60,10 @@ class GameDrawException(Exception):
 
 
 class Hand:
-    def __init__(self, cards: List[Card]):
-        self.cards = cards
+    def __init__(self, cards: Iterable[Card]):
+        self.cards = list(cards)
 
-    def add(self, cards: List[Card]):
+    def add(self, cards: Iterable[Card]):
         self.cards.extend(cards)
 
     def __repr__(self):

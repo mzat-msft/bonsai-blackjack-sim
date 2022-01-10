@@ -5,7 +5,7 @@ import functools
 import json
 import random
 import time
-from collections.abc import Sequence
+from typing import Sequence
 
 from microsoft_bonsai_api.simulator.client import (BonsaiClient,
                                                    BonsaiClientConfig)
