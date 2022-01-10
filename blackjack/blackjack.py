@@ -47,7 +47,7 @@ class Deck:
         return random.choices(self.cards, k=n)
 
 
-class GameOverException(Exception):
+class GameLostException(Exception):
     pass
 
 
@@ -137,7 +137,7 @@ class Blackjack:
         )
 
     def lose(self):
-        raise GameOverException(
+        raise GameLostException(
             f'Player lost with {self.player_hand.value}',
             f' against {self.dealer_hand.value}',
         )
@@ -198,7 +198,7 @@ class SimulatorModel:
                 'result': -1,
                 **self.blackjack.state
             }
-        except GameOverException:
+        except GameLostException:
             return {
                 'result': 0,
                 **self.blackjack.state,
