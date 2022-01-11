@@ -70,7 +70,11 @@ class Hand:
         return "[" + ", ".join(str(card) for card in self.cards) + "]"
 
     def has_ace(self):
-        return any(card.rank == 'A' for card in self.cards)
+        return self.has_rank('A')
+
+    def has_rank(self, rank):
+        """Return True if rank is present in hand."""
+        return any(card.rank == rank for card in self.cards)
 
     @property
     def value(self) -> int:

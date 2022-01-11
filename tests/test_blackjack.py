@@ -25,3 +25,11 @@ def test_hand_value(test_input, expected):
 def test_hand_value_raises_valueerror():
     with pytest.raises(ValueError):
         Hand([Card('F', 'x')]).value
+
+
+def test_hand_has_ace():
+    assert Hand([Card('A', 'x')]).has_ace()
+
+
+def test_hand_has_not_ace():
+    assert not Hand([Card('J', 'x')]).has_ace()
