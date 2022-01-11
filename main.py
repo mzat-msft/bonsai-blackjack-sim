@@ -96,8 +96,8 @@ class BonsaiConnector:
 
 def get_reward(results):
     reward_mapping = {
-        (0, False): -100,
-        (0, True): -200,
+        (0, False): -1,
+        (0, True): -2,
         (1, False): 0,
         (1, True): 0,
         (2, False): 1,

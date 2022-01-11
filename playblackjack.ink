@@ -56,10 +56,10 @@ function Reward(obs: SimState) {
     # Lose
     else if (obs.result == 0) {
         if (obs.double == 1) {
-            return -200
+            return -2
         }
         else {
-            return -100
+            return -1
         }
     }
     # Draw
