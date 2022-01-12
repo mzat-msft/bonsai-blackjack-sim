@@ -3,8 +3,8 @@ Simulation of Blackjack.
 
 This is a simplified version of blackjack with the following features:
 
-- Cards are picked from a french deck of infinite size, that is the
-  probability of picking a card is always the same at each iteration.
+- Cards are picked from a french deck of size 52. The deck is refreshed at each
+  episode.
 - At the first hand the player is given two cards and the dealer one
 - At each step the player chooses whether to ``stay``, ``hit`` or ``double``.
 - If the player chooses ``hit``, the dealer picks a card for the player
@@ -22,7 +22,7 @@ TODO: Forbid choosing ``double`` after first move.
 import itertools
 import dataclasses
 import random
-from typing import Iterable, Sequence
+from typing import Iterable, List
 
 
 @dataclasses.dataclass
@@ -53,9 +53,10 @@ class Deck:
         self.cards = [
             Card(rank, suit) for suit in self.suits for rank in self.ranks
         ]
+        random.shuffle(self.cards)
 
-    def pick(self, n=1) -> Sequence[Card]:
-        return random.choices(self.cards, k=n)
+    def pick(self, n=1) -> List[Card]:
+        return [self.cards.pop() for i in range(n)]
 
 
 class GameLostException(Exception):
