@@ -68,3 +68,18 @@ hand_is_ranks = [
 @pytest.mark.parametrize("hand, ranks, expected", hand_is_ranks)
 def test_hand_is_ranks(hand, ranks, expected):
     assert hand.is_ranks(*ranks) == expected
+
+
+hand_has_rank_between = [
+    (Hand([Card('3', 'x')]), (1, 3), True),
+    (Hand([Card('A', 'x'), Card('3', 'x')]), (1, 3), True),
+    (Hand([Card('4', 'x')]), (1, 3), False),
+    (Hand([Card('A', 'x'), Card('4', 'x')]), (1, 3), False),
+    (Hand([Card('J', 'x')]), (1, 10), True),
+    (Hand([Card('A', 'x'), Card('Q', 'x')]), (1, 3), False),
+]
+
+
+@pytest.mark.parametrize("hand, ranks, expected", hand_has_rank_between)
+def test_hand_has_rank_between(hand, ranks, expected):
+    assert hand.has_rank_between(*ranks) == expected

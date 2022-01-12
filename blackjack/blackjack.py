@@ -33,6 +33,18 @@ class Card:
     def __repr__(self):
         return f"Card({self.rank}, {self.suit})"
 
+    @property
+    def rank_numeric(self):
+        if self.rank in list('JQK'):
+            return 10
+        elif self.rank.isdigit():
+            return int(self.rank)
+        elif self.rank == 'A':
+            # This makes the function not usable for computing hand value
+            return 11
+        else:
+            raise ValueError(f'Rank {self.rank} unknown.')
+
 
 class Deck:
     ranks = [str(n) for n in range(2, 11)] + list('JQKA')
@@ -78,6 +90,10 @@ class Hand:
     def has_rank(self, rank):
         """Return True if ``rank`` is present in hand."""
         return any(card.rank == str(rank) for card in self.cards)
+
+    def has_rank_between(self, min_rank, max_rank):
+        """Return True if hand has at least one card with rank between min and max."""
+        return any(min_rank <= card.rank_numeric <= max_rank for card in self.cards)
 
     def is_ranks(self, *ranks):
         """Return True if hand is composed exactly by ``ranks``."""
