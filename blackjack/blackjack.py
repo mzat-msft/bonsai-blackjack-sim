@@ -40,7 +40,6 @@ class Card:
         elif self.rank.isdigit():
             return int(self.rank)
         elif self.rank == 'A':
-            # This makes the function not usable for computing hand value
             return 11
         else:
             raise ValueError(f'Rank {self.rank} unknown.')
@@ -113,14 +112,10 @@ class Hand:
         aces = 0
         cumulative = 0
         for card in self.cards:
-            if card.rank in list('JQK'):
-                cumulative += 10
-            elif card.rank.isdigit():
-                cumulative += int(card.rank)
-            elif card.rank == 'A':
+            if card.rank_numeric == 11:
                 aces += 1
             else:
-                raise ValueError(f'Card rank unknown: {card.rank}')
+                cumulative += card.rank_numeric
         if aces:
             sums = []
             min_overflow = None
