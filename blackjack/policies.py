@@ -44,14 +44,12 @@ class BasicPolicy(Policy):
 
     @staticmethod
     def strategy_matrix(player: Hand, dealer: Hand, player_ace: bool):
-        """Apply stragety from https://www.blackjackapprenticeship.com/blackjack-strategy-charts/."""  # noqa
+        """Apply strategy from https://www.blackjackapprenticeship.com/blackjack-strategy-charts/."""  # noqa
         # Soft hand
         if player_ace and len(player) < 3:
-            if player.has_rank(9):
-                return 0
-            elif player.has_rank(8) and dealer.is_ranks(6):
+            if player.has_rank(8) and dealer.is_ranks(6):
                 return 2
-            elif player.has_rank(8):
+            elif player.has_rank_between(8, 9):
                 return 0
             elif player.has_rank(7) and dealer.has_rank_between(2, 6):
                 return 2
