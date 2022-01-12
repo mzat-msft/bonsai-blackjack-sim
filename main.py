@@ -1,20 +1,15 @@
 """Main connector to the Bonsai platform."""
 import argparse
-import collections
-import functools
 import json
-import random
 import time
-from typing import Sequence
 
 from microsoft_bonsai_api.simulator.client import (BonsaiClient,
                                                    BonsaiClientConfig)
 from microsoft_bonsai_api.simulator.generated.models import (
     SimulatorInterface, SimulatorState)
 
-from blackjack.blackjack import Hand, SimulatorModel
-
-AVAILABLE_POLICIES = ['basic', 'random', 'random_conservative', 'player']
+from blackjack.blackjack import SimulatorModel
+from blackjack.policies import AVAILABLE_POLICIES, test_policy
 
 
 parser = argparse.ArgumentParser(description="Run a simulation")
@@ -92,120 +87,6 @@ class BonsaiConnector:
             workspace_name=self.workspace,
             session_id=self.registered_session.session_id,
         )
-
-
-def get_reward(results):
-    reward_mapping = {
-        (0, False): -1,
-        (0, True): -2,
-        (1, False): 0,
-        (1, True): 0,
-        (2, False): 1,
-        (2, True): 2,
-    }
-    counter = collections.Counter(results)
-    reward = 0
-    total = 0
-    for elem, cnt in counter.items():
-        total += cnt
-        reward += reward_mapping[elem] * cnt
-    return reward / total
-
-
-def random_policy(state, choices: Sequence):
-    return {'command': random.choice(choices)}
-
-
-def player_policy(state):
-    action = -1
-    while action not in range(3):
-        try:
-            action = int(input('Select action: 0 (Stay), 1 (Hit), 2 (Double)'))
-        except ValueError:
-            pass
-    return {'command': int(action)}
-
-
-def strategy_matrix(player_hand: Hand, dealer_hand: Hand, player_ace: bool):
-    """Apply stragety from https://www.blackjackapprenticeship.com/blackjack-strategy-charts/."""  # noqa
-    # Soft hand
-    if player_ace and len(player_hand) < 3:
-        if player_hand.has_rank(9):
-            return 0
-        elif player_hand.has_rank(8) and dealer_hand.is_ranks(6):
-            return 2
-        elif player_hand.has_rank(8):
-            return 0
-        elif player_hand.has_rank(7) and dealer_hand.has_rank_between(2, 6):
-            return 2
-        elif player_hand.has_rank(7) and dealer_hand.has_rank_between(7, 8):
-            return 0
-        elif player_hand.has_rank(7) and dealer_hand.has_rank_between(9, 11):
-            return 1
-        elif player_hand.has_rank(6) and dealer_hand.is_ranks(2):
-            return 1
-        elif player_hand.has_rank_between(2, 5) and dealer_hand.has_rank_between(2, 3):
-            return 1
-        elif player_hand.has_rank_between(2, 6) and dealer_hand.has_rank_between(7, 11):
-            return 1
-        elif player_hand.has_rank_between(2, 3) and dealer_hand.is_ranks(4):
-            return 1
-        else:
-            return 2
-    # Hard hand
-    if 12 <= player_hand.value <= 16 and dealer_hand.has_rank_between(7, 11):
-        return 1
-    elif player_hand.value == 12 and dealer_hand.has_rank_between(2, 3):
-        return 1
-    elif player_hand.value >= 12:
-        return 0
-    elif player_hand.value == 10 and dealer_hand.has_rank_between(10, 11):
-        return 1
-    elif 10 <= player_hand.value <= 11:
-        return 2
-    elif player_hand.value == 9 and dealer_hand.has_rank_between(3, 6):
-        return 2
-    else:
-        return 1
-
-
-def basic_policy(state):
-    return {
-        'command': strategy_matrix(
-            state['player_hand'], state['dealer_hand'], state['player_ace']
-        )
-    }
-
-
-def test_policy(n_games, policy):
-    print_state = False
-    if policy == 'random':
-        f_policy = functools.partial(random_policy, choices=(0, 1, 2))
-    elif policy == 'random_conservative':
-        f_policy = functools.partial(random_policy, choices=(0, 1))
-    elif policy == 'player':
-        f_policy = player_policy
-        print_state = True
-    elif policy == 'basic':
-        f_policy = basic_policy
-    else:
-        raise ValueError(f'Policy {policy} not found.')
-    print(f'Using {policy} policy.')
-
-    model = SimulatorModel()
-    results = []
-    for game in range(n_games):
-        state = model.reset()
-        if print_state:
-            print(state)
-        while state['result'] < 0:
-            state = model.step(f_policy(state))
-            if state['result'] >= 0:
-                results.append((state['result'], state['double']))
-            if print_state:
-                print(state)
-    reward = get_reward(results)
-    print(reward)
 
 
 def run_interface():
