@@ -12,9 +12,9 @@ from microsoft_bonsai_api.simulator.client import (BonsaiClient,
 from microsoft_bonsai_api.simulator.generated.models import (
     SimulatorInterface, SimulatorState)
 
-from blackjack.blackjack import SimulatorModel
+from blackjack.blackjack import Hand, SimulatorModel
 
-AVAILABLE_POLICIES = ['random', 'random_conservative', 'player']
+AVAILABLE_POLICIES = ['basic', 'random', 'random_conservative', 'player']
 
 
 parser = argparse.ArgumentParser(description="Run a simulation")
@@ -126,6 +126,57 @@ def player_policy(state):
     return {'command': int(action)}
 
 
+def strategy_matrix(player_hand: Hand, dealer_hand: Hand, player_ace: bool):
+    """Apply stragety from https://www.blackjackapprenticeship.com/blackjack-strategy-charts/."""  # noqa
+    # Soft hand
+    if player_ace and len(player_hand) < 3:
+        if player_hand.has_rank(9):
+            return 0
+        elif player_hand.has_rank(8) and dealer_hand.is_ranks(6):
+            return 2
+        elif player_hand.has_rank(8):
+            return 0
+        elif player_hand.has_rank(7) and dealer_hand.has_rank_between(2, 6):
+            return 2
+        elif player_hand.has_rank(7) and dealer_hand.has_rank_between(7, 8):
+            return 0
+        elif player_hand.has_rank(7) and dealer_hand.has_rank_between(9, 11):
+            return 1
+        elif player_hand.has_rank(6) and dealer_hand.is_ranks(2):
+            return 1
+        elif player_hand.has_rank_between(2, 5) and dealer_hand.has_rank_between(2, 3):
+            return 1
+        elif player_hand.has_rank_between(2, 6) and dealer_hand.has_rank_between(7, 11):
+            return 1
+        elif player_hand.has_rank_between(2, 3) and dealer_hand.is_ranks(4):
+            return 1
+        else:
+            return 2
+    # Hard hand
+    if 12 <= player_hand.value <= 16 and dealer_hand.has_rank_between(7, 11):
+        return 1
+    elif player_hand.value == 12 and dealer_hand.has_rank_between(2, 3):
+        return 1
+    elif player_hand.value >= 12:
+        return 0
+    elif player_hand.value == 10 and dealer_hand.has_rank_between(10, 11):
+        return 1
+    elif 10 <= player_hand.value <= 11:
+        return 2
+    elif player_hand.value == 9 and dealer_hand.has_rank_between(3, 6):
+        return 2
+    else:
+        return 1
+
+
+def basic_policy(state):
+    return {
+        'command': strategy_matrix(
+            state['player_hand'], state['dealer_hand'], state['player_ace']
+        )
+    }
+
+
 def test_policy(n_games, policy):
     print_state = False
     if policy == 'random':
@@ -135,6 +186,8 @@ def test_policy(n_games, policy):
     elif policy == 'player':
         f_policy = player_policy
         print_state = True
+    elif policy == 'basic':
+        f_policy = basic_policy
     else:
         raise ValueError(f'Policy {policy} not found.')
     print(f'Using {policy} policy.')

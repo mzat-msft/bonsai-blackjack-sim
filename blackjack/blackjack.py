@@ -155,6 +155,8 @@ class Blackjack:
             'double': self.double,
             'player_ace': self.player_hand.has_ace(),
             'dealer_ace': self.dealer_hand.has_ace(),
+            'player_hand': self.player_hand,
+            'dealer_hand': self.dealer_hand,
         }
 
     def win(self):
