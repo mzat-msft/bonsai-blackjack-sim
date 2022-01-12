@@ -66,6 +66,9 @@ class Hand:
     def add(self, cards: Iterable[Card]):
         self.cards.extend(cards)
 
+    def __len__(self):
+        return len(self.cards)
+
     def __repr__(self):
         return "[" + ", ".join(str(card) for card in self.cards) + "]"
 
@@ -73,8 +76,12 @@ class Hand:
         return self.has_rank('A')
 
     def has_rank(self, rank):
-        """Return True if rank is present in hand."""
-        return any(card.rank == rank for card in self.cards)
+        """Return True if ``rank`` is present in hand."""
+        return any(card.rank == str(rank) for card in self.cards)
+
+    def is_ranks(self, *ranks):
+        """Return True if hand is composed exactly by ``ranks``."""
+        return all(self.has_rank(rank) for rank in ranks) and len(ranks) == len(self)
 
     @property
     def value(self) -> int:

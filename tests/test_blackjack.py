@@ -33,3 +33,38 @@ def test_hand_has_ace():
 
 def test_hand_has_not_ace():
     assert not Hand([Card('J', 'x')]).has_ace()
+
+
+hand_has_rank = [
+    (Hand([Card('3', 'x')]), 3, True),
+    (Hand([Card('4', 'x')]), 3, False),
+    (Hand([Card('3', 'x')]), '3', True),
+    (Hand([Card('4', 'x')]), '3', False),
+    (Hand([Card('J', 'x')]), 'J', True),
+    (Hand([Card('J', 'x')]), 'Q', False),
+]
+
+
+@pytest.mark.parametrize("hand, ranks, expected", hand_has_rank)
+def test_hand_has_ranks(hand, ranks, expected):
+    assert hand.has_rank(ranks) == expected
+
+
+hand_is_ranks = [
+    (Hand([Card('3', 'x')]), (3, ), True),
+    (Hand([Card('4', 'x')]), (3, ), False),
+    (Hand([Card('3', 'x')]), ('3', ), True),
+    (Hand([Card('4', 'x')]), ('3', ), False),
+    (Hand([Card('J', 'x')]), ('J', ), True),
+    (Hand([Card('J', 'x')]), ('Q', ), False),
+    (Hand([Card('J', 'x')]), ('J', 3), False),
+    (Hand([Card('J', 'x'), Card('3', 'x')]), ('J', ), False),
+    (Hand([Card('J', 'x'), Card('3', 'x')]), ('J', 3), True),
+    (Hand([Card('J', 'x'), Card('3', 'x')]), ('J', 3, '3'), False),
+    (Hand([Card('J', 'x'), Card('3', 'x'), Card('3', 'x')]), ('J', 3, '3'), True),
+]
+
+
+@pytest.mark.parametrize("hand, ranks, expected", hand_is_ranks)
+def test_hand_is_ranks(hand, ranks, expected):
+    assert hand.is_ranks(*ranks) == expected
