@@ -105,6 +105,7 @@ def get_policy(policy: str) -> Policy:
 
 def get_reward(results):
     reward_mapping = {
+        # (Result, Double): Reward
         (0, False): -1,
         (0, True): -2,
         (1, False): 0,
@@ -121,7 +122,8 @@ def get_reward(results):
     return reward / total
 
 
-def test_policy(n_games, policy_name: str):
+def evaluate_policy(n_games, policy_name: str):
+    """Evaluate policy ``policy_name`` by playing ``n_games."""
     policy = get_policy(policy_name)
     print(f'Using {policy_name} policy.')
 

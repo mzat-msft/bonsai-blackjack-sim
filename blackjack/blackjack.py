@@ -35,6 +35,7 @@ class Card:
 
     @property
     def rank_numeric(self):
+        """Return he numeric value of the card."""
         if self.rank in list('JQK'):
             return 10
         elif self.rank.isdigit():
@@ -102,7 +103,7 @@ class Hand:
     @property
     def value(self) -> int:
         """
-        Count the value of the hand.
+        Return the value of the hand.
 
         Figures like J, Q, and K count as ten. Digits count by their
         value and aces count like 1 or 11 depending on the best value.

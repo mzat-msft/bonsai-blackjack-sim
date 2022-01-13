@@ -9,7 +9,7 @@ from microsoft_bonsai_api.simulator.generated.models import (
     SimulatorInterface, SimulatorState)
 
 from blackjack.blackjack import SimulatorModel
-from blackjack.policies import AVAILABLE_POLICIES, test_policy
+from blackjack.policies import AVAILABLE_POLICIES, evaluate_policy
 
 
 parser = argparse.ArgumentParser(description="Run a simulation")
@@ -55,6 +55,7 @@ class BonsaiConnector:
         self.sequence_id = 1
 
     def next_event(self):
+        """Poll the Bonsai platform for the next event and advance the state."""
         sim_state = SimulatorState(
             sequence_id=self.sequence_id,
             state=self.sim_model_state,
@@ -106,7 +107,7 @@ def run_interface():
 def main():
     args = parser.parse_args()
     if args.policy:
-        test_policy(args.episodes, args.policy)
+        evaluate_policy(args.episodes, args.policy)
     else:
         run_interface()
 
