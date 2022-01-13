@@ -18,6 +18,7 @@ class Policy(ABC):
 
 
 class RandomPolicy(Policy):
+    """Randomly select an action."""
     def __init__(self, choices: Sequence):
         self.choices = choices
 
@@ -26,6 +27,7 @@ class RandomPolicy(Policy):
 
 
 class PlayerPolicy(Policy):
+    """Create an interactive session to evaluate a human player."""
     print_state = True
 
     def step(self, state):
