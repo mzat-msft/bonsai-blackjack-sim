@@ -1,5 +1,4 @@
 {
-  "$schema": "https://raw.githubusercontent.com/microsoft/microsoft-bonsai-api/main/Reference/siminterface.schema.json",
   "name": "blackjack-sim",
   "timeout": 60,
   "description": {

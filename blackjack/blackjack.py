@@ -19,9 +19,11 @@ This is a simplified version of blackjack with the following features:
 
 TODO: Forbid choosing ``double`` after first move.
 """
-import itertools
 import dataclasses
+import itertools
+import json
 import random
+from pathlib import Path
 from typing import Iterable, List
 
 
@@ -208,7 +210,8 @@ action_mapping = {
 
 class SimulatorModel:
     def __init__(self):
-        pass
+        with open(Path(__file__).parent / 'blackjack-interface.json', 'r') as fp:
+            self.interface = json.load(fp)
 
     def reset(self):
         self.blackjack = Blackjack()

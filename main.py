@@ -1,6 +1,5 @@
 """Main connector to the Bonsai platform."""
 import argparse
-import json
 import time
 
 from microsoft_bonsai_api.simulator.client import (BonsaiClient,
@@ -23,10 +22,6 @@ class BonsaiConnector:
 
     Parameters
     ----------
-    if_json: str or Path
-        A json file containing all information concerning
-        the simulation. It must contain at least a ``name``
-        and ``timeout`` field.
     sim_model: object
         A class that wraps the simulation.
 
@@ -34,23 +29,24 @@ class BonsaiConnector:
     connector to work correctly
     - ``step``: perform a sim iteration. Must accept an action.
     - ``reset``: reset the simulation and start a new episode.
+    And it must have the following attribute
+    - ``interface``: dict containing simulator informations to be used
+      by the Bonsai Platform. (``name`` key is required)
     """
-    def __init__(self, if_json, sim_model):
-        with open(if_json, 'r') as fp:
-            interface = json.load(fp)
+    def __init__(self, sim_model):
+        self.sim_model = sim_model()
         client_config = BonsaiClientConfig()
         self.workspace = client_config.workspace
         self.client = BonsaiClient(client_config)
 
         reg_info = SimulatorInterface(
             simulator_context=client_config.simulator_context,
-            **interface,
+            **self.sim_model.interface,
         )
         self.registered_session = self.client.session.create(
             workspace_name=client_config.workspace,
             body=reg_info,
         )
-        self.sim_model = sim_model()
         self.sim_model_state = {}
         self.sequence_id = 1
 
@@ -91,10 +87,7 @@ class BonsaiConnector:
 
 
 def run_interface():
-    bonsai_conn = BonsaiConnector(
-        'blackjack-interface.json',
-        SimulatorModel,
-    )
+    bonsai_conn = BonsaiConnector(SimulatorModel)
 
     while True:
         try:
