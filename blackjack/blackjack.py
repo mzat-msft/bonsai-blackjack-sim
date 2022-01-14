@@ -23,6 +23,7 @@ import dataclasses
 import itertools
 import json
 import random
+import reprlib
 from pathlib import Path
 from typing import Iterable, List
 
@@ -33,11 +34,14 @@ class Card:
     suit: str
 
     def __repr__(self):
+        return f"Card({self.rank!r}, {self.suit!r})"
+
+    def __str__(self):
         return f"Card({self.rank}, {self.suit})"
 
     @property
     def rank_numeric(self):
-        """Return he numeric value of the card."""
+        """Return the numeric value of the card."""
         if self.rank in list('JQK'):
             return 10
         elif self.rank.isdigit():
@@ -85,7 +89,10 @@ class Hand:
         return len(self.cards)
 
     def __repr__(self):
-        return "[" + ", ".join(str(card) for card in self.cards) + "]"
+        return f"Hand({reprlib.repr(self.cards)})"
+
+    def __str__(self):
+        return str(self.cards)
 
     def has_ace(self):
         return self.has_rank('A')
