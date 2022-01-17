@@ -36,11 +36,11 @@ Currently the following policies are implemented:
 
 These policies have been evaluated on a total of 100'000 episodes and the
 mean reward obtained reported in the table below. In addition, we report the
-mean reward of a brain trained using Bonsai evaluated on 5'700 episodes.
+mean reward of a brain trained using Bonsai evaluated on 100'181 episodes.
 
 | Policy              | Mean Reward |
 | ------------------- | -----------:|
 | Random              | -0.565      |
 | Random conservative | -0.390      |
-| Basic strategy      | -0.053      |
-| Bonsai brain        | -0.060      |
+| Basic strategy      | -0.059      |
+| Bonsai brain        | -0.057      |
