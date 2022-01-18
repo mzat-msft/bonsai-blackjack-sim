@@ -25,11 +25,21 @@ class BonsaiConnector:
     sim_model: object
         A class that wraps the simulation.
 
-    The sim_model must have some methods available for the
-    connector to work correctly
-    - ``step``: perform a sim iteration. Must accept an action.
-    - ``reset``: reset the simulation and start a new episode.
-    And it must have the following attribute
+    ``sim_model`` must implement the following methods to work correctly
+    with the connector:
+
+    - ``step(action) -> sim_state``:
+      perform a sim iteration. ``action`` is a dictionary that cointains
+      as keys the name of all possible actions and their values as dictionary
+      values. ``sim_state`` is the simulation state dictionary that is
+      passed to Bonsai to get the next action.
+    - ``reset(config) -> sim_state``:
+        reset the simulation and start a new episode. Accepts ``config`` as
+        dictionary with parameters to be used as configuration for the
+        simulation episode.
+
+    In addition, ``sim_model`` must have the following attribute
+
     - ``interface``: dict containing simulator informations to be used
       by the Bonsai Platform. (``name`` key is required)
     """
@@ -66,7 +76,7 @@ class BonsaiConnector:
         if event.type == 'Idle':
             time.sleep(event.idle.callback_time)
         elif event.type == 'EpisodeStart':
-            self.sim_model_state = self.sim_model.reset()
+            self.sim_model_state = self.sim_model.reset(event.episode_start.config)
         elif event.type == 'EpisodeStep':
             action = event.episode_step.action
             self.sim_model_state = self.sim_model.step(action)

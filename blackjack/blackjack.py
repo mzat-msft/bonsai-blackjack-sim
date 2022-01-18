@@ -220,7 +220,7 @@ class SimulatorModel:
         with open(Path(__file__).parent / 'blackjack-interface.json', 'r') as fp:
             self.interface = json.load(fp)
 
-    def reset(self):
+    def reset(self, config):
         self.blackjack = Blackjack()
         return {
             'result': -1,
