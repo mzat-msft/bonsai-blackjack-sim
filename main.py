@@ -57,6 +57,7 @@ class BonsaiConnector:
             workspace_name=client_config.workspace,
             body=reg_info,
         )
+        print(f'Created session with session_id {self.registered_session.session_id}')
         self.sim_model_state = {}
         self.sequence_id = 1
 
