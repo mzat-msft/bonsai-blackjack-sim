@@ -91,6 +91,17 @@ class BonsaiConnector:
             )
         print(time.strftime('%H:%M:%S'), event.type, self.sim_model_state)
 
+    def event_loop(self):
+        try:
+            while True:
+                self.next_event()
+        except Exception:
+            print('Error in the event loop')
+            traceback.print_exc()
+        finally:
+            print('Deregistering simulator...')
+            self.close_session()
+
     def close_session(self):
         self.client.session.delete(
             workspace_name=self.workspace,
@@ -100,16 +111,7 @@ class BonsaiConnector:
 
 def run_interface():
     bonsai_conn = BonsaiConnector(SimulatorModel)
-
-    try:
-        while True:
-            bonsai_conn.next_event()
-    except Exception:
-        print('Error in the event loop')
-        traceback.print_exc()
-    finally:
-        print('Deregistering simulator...')
-        bonsai_conn.close_session()
+    bonsai_conn.event_loop()
 
 
 def main():
