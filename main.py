@@ -15,6 +15,7 @@ from blackjack.policies import AVAILABLE_POLICIES, evaluate_policy
 parser = argparse.ArgumentParser(description="Run a simulation")
 parser.add_argument('-p', '--policy', choices=AVAILABLE_POLICIES)
 parser.add_argument('-e', '--episodes', type=int, default=100)
+parser.add_argument('-v', '--verbose', action='store_true', default=False)
 
 
 class BonsaiConnector:
@@ -44,9 +45,9 @@ class BonsaiConnector:
     - ``interface``: dict containing simulator informations to be used
       by the Bonsai Platform. (``name`` key is required)
     """
-    def __init__(self, sim_model):
+    def __init__(self, sim_model, *, verbose=False):
         self.sim_model = sim_model()
-        client_config = BonsaiClientConfig()
+        client_config = BonsaiClientConfig(enable_logging=verbose)
         self.workspace = client_config.workspace
         self.client = BonsaiClient(client_config)
 
@@ -109,8 +110,8 @@ class BonsaiConnector:
         )
 
 
-def run_interface():
-    bonsai_conn = BonsaiConnector(SimulatorModel)
+def run_interface(verbose):
+    bonsai_conn = BonsaiConnector(SimulatorModel, verbose=verbose)
     bonsai_conn.event_loop()
 
 
@@ -119,7 +120,7 @@ def main():
     if args.policy:
         evaluate_policy(args.episodes, args.policy)
     else:
-        run_interface()
+        run_interface(args.verbose)
 
 
 if __name__ == '__main__':
