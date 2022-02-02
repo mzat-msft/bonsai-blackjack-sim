@@ -1,6 +1,7 @@
 """Main connector to the Bonsai platform."""
 import argparse
 import time
+import traceback
 
 from microsoft_bonsai_api.simulator.client import (BonsaiClient,
                                                    BonsaiClientConfig)
@@ -100,12 +101,15 @@ class BonsaiConnector:
 def run_interface():
     bonsai_conn = BonsaiConnector(SimulatorModel)
 
-    while True:
-        try:
+    try:
+        while True:
             bonsai_conn.next_event()
-        except Exception as e:
-            bonsai_conn.close_session()
-            raise RuntimeError('Error in event loop') from e
+    except Exception:
+        print('Error in the event loop')
+        traceback.print_exc()
+    finally:
+        print('Deregistering simulator...')
+        bonsai_conn.close_session()
 
 
 def main():
