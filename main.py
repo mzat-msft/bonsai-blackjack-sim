@@ -26,6 +26,8 @@ class BonsaiConnector:
     ----------
     sim_model: object
         A class that wraps the simulation.
+    verbose: bool
+        If set to true enable API logging.
 
     ``sim_model`` must implement the following methods to work correctly
     with the connector:
