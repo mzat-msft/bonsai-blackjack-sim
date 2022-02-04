@@ -18,6 +18,7 @@ This is a simplified version of blackjack with the following features:
 - Who has a hand closer to 21 wins the game, if both have 21 the game is a draw
 
 TODO: Forbid choosing ``double`` after first move.
+TODO: Reuse same deck for multiple hands + make deck closer to casino game (2 decks...)
 """
 import dataclasses
 import itertools
