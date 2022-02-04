@@ -1,6 +1,7 @@
 import pytest
 
 from blackjack.blackjack import Card, Hand
+from blackjack.policies import get_reward
 
 
 hands = [
@@ -87,3 +88,24 @@ hand_has_rank_between = [
 @pytest.mark.parametrize("hand, ranks, expected", hand_has_rank_between)
 def test_hand_has_rank_between(hand, ranks, expected):
     assert hand.has_rank_between(*ranks) == expected
+
+
+reward_states = [
+    ((0, False, False), -1),
+    ((0, False, True), -.5),
+    ((0, True, False), -2),
+    ((0, True, True), -2),
+    ((1, False, False), 0),
+    ((1, False, True), 0),
+    ((1, True, False), 0),
+    ((1, True, True), 0),
+    ((2, False, False), 1),
+    ((2, False, True), 1),
+    ((2, True, False), 2),
+    ((2, True, True), 2),
+]
+
+
+@pytest.mark.parametrize("state, expected", reward_states)
+def test_state_has_reward(state, expected):
+    assert get_reward(state) == expected

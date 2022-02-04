@@ -46,6 +46,13 @@ class BasicPolicy(Policy):
 
     @staticmethod
     def strategy_matrix(player: Hand, dealer: Hand, player_ace: bool):
+        # Surrender
+        if (
+            player.value == 16 and dealer.has_rank_between(9, 11) or
+            player.value == 15 and dealer.has_rank(10)
+        ):
+            return 3
+
         # Soft hand
         if player_ace and len(player) < 3:
             if player.has_rank(8) and dealer.is_ranks(6):
@@ -105,22 +112,33 @@ def get_policy(policy: str) -> Policy:
         raise ValueError(f'Policy {policy} not found.')
 
 
-def get_reward(results):
+def get_reward(state):
+    # TODO: reimplement with pattern matching on python 3.10
     reward_mapping = {
-        # (Result, Double): Reward
-        (0, False): -1,
-        (0, True): -2,
-        (1, False): 0,
-        (1, True): 0,
-        (2, False): 1,
-        (2, True): 2,
+        # (Result, Double, Surrender): Reward
+        (0, False, True): -0.5,
+        (0, False, False): -1,
+        (0, True, True): -2,
+        (0, True, False): -2,
+        (1, False, True): 0,
+        (1, False, False): 0,
+        (1, True, True): 0,
+        (1, True, False): 0,
+        (2, False, True): 1,
+        (2, False, False): 1,
+        (2, True, True): 2,
+        (2, True, False): 2,
     }
+    return reward_mapping[state]
+
+
+def get_mean_reward(results):
     counter = collections.Counter(results)
     reward = 0
     total = 0
     for elem, cnt in counter.items():
         total += cnt
-        reward += reward_mapping[elem] * cnt
+        reward += get_reward(elem) * cnt
     return reward / total
 
 
@@ -132,12 +150,12 @@ def evaluate_policy(n_games, policy_name: str):
     model = SimulatorModel()
     results = []
     for game in range(n_games):
-        state = model.reset()
+        state = model.reset({})
         while state['result'] < 0:
             state = model.step(policy.step(state))
             if state['result'] >= 0:
-                results.append((state['result'], state['double']))
+                results.append((state['result'], state['double'], state['surrender']))
         if getattr(policy, 'print_state', False):
             print(state)
-    reward = get_reward(results)
+    reward = get_mean_reward(results)
     print(reward)

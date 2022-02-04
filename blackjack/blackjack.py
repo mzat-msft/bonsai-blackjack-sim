@@ -6,16 +6,20 @@ This is a simplified version of blackjack with the following features:
 - Cards are picked from a french deck of size 52. The deck is refreshed at each
   episode.
 - At the first hand the player is given two cards and the dealer one
-- At each step the player chooses whether to ``stay``, ``hit`` or ``double``.
-- If the player chooses ``hit``, the dealer picks a card for the player
+- At each step the player chooses whether to ``stay``, ``hit``, ``double`` or
+  ``surrender``.
+- If the player chooses ``hit``, the dealer gives a card to the player
 - The player can choose ``hit`` until the sum of cards is higher than 21,
-  in that case the player loses
-- When the player ``stay`` the dealer picks a card for itself and the value of
-  player and dealer hands are counted
+  in that case the player loses (busts).
+- If the player ``surrenders`` the game ends and the player loses only half of
+  the bet.
 - If the player chooses to ``double``, one card is added to its hand and the
   game continues as if he selects ``stay``. In case the player wins, the reward
   should be higher than for a normal win.
-- Who has a hand closer to 21 wins the game, if both have 21 the game is a draw
+- When the player ``stays`` the dealer picks cards until reaching a 17, and the
+  value of player and dealer hands are compared
+- Who has a hand closer to 21 wins the game, if both have the same value the
+  game is a draw
 
 TODO: Forbid choosing ``double`` after first move.
 TODO: Reuse same deck for multiple hands + make deck closer to casino game (2 decks...)
@@ -76,6 +80,10 @@ class GameWonException(Exception):
 
 
 class GameDrawException(Exception):
+    pass
+
+
+class GameSurrenderException(Exception):
     pass
 
 
@@ -148,6 +156,7 @@ class Hand:
 
 class Blackjack:
     double: bool = False
+    surrender: bool = False
 
     def __init__(self):
         self.deck = Deck()
@@ -164,6 +173,7 @@ class Blackjack:
             'dealer_ace': self.dealer_hand.has_ace(),
             'player_hand': self.player_hand,
             'dealer_hand': self.dealer_hand,
+            'surrender': self.surrender,
         }
 
     def win(self):
@@ -180,6 +190,9 @@ class Blackjack:
 
     def finalize_game(self):
         """Run this function when no other player action is possible."""
+        if self.surrender:
+            raise GameSurrenderException('Player surrendered')
+
         while self.dealer_hand.value < 17:
             self.dealer_hand.add(self.deck.pick())
         player = self.player_hand.value
@@ -207,12 +220,16 @@ class Blackjack:
             self.finalize_game()
         elif action == 'stay':
             self.finalize_game()
+        elif action == 'surrender':
+            self.surrender = True
+            self.finalize_game()
 
 
 action_mapping = {
     0: 'stay',
     1: 'hit',
     2: 'double',
+    3: 'surrender',
 }
 
 
@@ -248,5 +265,10 @@ class SimulatorModel:
         except GameWonException:
             return {
                 'result': 2,
+                **self.blackjack.state,
+            }
+        except GameSurrenderException:
+            return {
+                'result': 0,
                 **self.blackjack.state,
             }
