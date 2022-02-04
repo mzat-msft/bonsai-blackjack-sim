@@ -23,6 +23,7 @@ This is a simplified version of blackjack with the following features:
 
 TODO: Forbid choosing ``double`` after first move.
 TODO: Reuse same deck for multiple hands + make deck closer to casino game (2 decks...)
+TODO: Split when first two cards are pair (need action masking)
 """
 import dataclasses
 import itertools
