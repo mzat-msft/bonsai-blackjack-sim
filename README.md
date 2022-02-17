@@ -33,14 +33,18 @@ Currently the following policies are implemented:
   can try their luck by playing blackjack
 - `basic`: use some commonly known strategy to choose the best action
   for a given game configuration
+- `brain`: evaluate a deployed brain trained with Bonsai
 
 These policies have been evaluated on a total of 100'000 episodes and the
 mean reward obtained reported in the table below. In addition, we report the
-mean reward of a brain trained using Bonsai evaluated on 100'181 episodes.
+mean reward of two brains trained using Bonsai evaluated on ~100'000 episodes.
+One brain is trained with an inkling defining a custom reward function, and the
+other defining concepts with goals.
 
-| Policy              | Mean Reward |
-| ------------------- | -----------:|
-| Random              | -0.565      |
-| Random conservative | -0.390      |
-| Basic strategy      | -0.059      |
-| Bonsai brain        | -0.057      |
+| Policy                       | Mean Reward |
+| ---------------------------- | -----------:|
+| Random                       | -0.565      |
+| Random conservative          | -0.390      |
+| Basic strategy               | -0.059      |
+| Bonsai brain - reward        | -0.057      |
+| Bonsai brain - goal          | -0.185      |
