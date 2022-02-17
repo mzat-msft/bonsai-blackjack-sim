@@ -170,10 +170,10 @@ class Blackjack:
             'player': self.player_hand.value,
             'dealer': self.dealer_hand.value,
             'double': self.double,
-            'player_ace': self.player_hand.has_ace(),
-            'dealer_ace': self.dealer_hand.has_ace(),
-            'player_hand': self.player_hand,
-            'dealer_hand': self.dealer_hand,
+            'player_ace': int(self.player_hand.has_ace()),
+            'dealer_ace': int(self.dealer_hand.has_ace()),
+            'player_hand': str(self.player_hand),
+            'dealer_hand': str(self.dealer_hand),
             'surrender': self.surrender,
         }
 

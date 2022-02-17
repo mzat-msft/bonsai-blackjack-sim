@@ -4,9 +4,11 @@ import random
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
 
+import requests
+
 from blackjack.blackjack import Hand, SimulatorModel
 
-AVAILABLE_POLICIES = ['basic', 'random', 'random_conservative', 'player']
+AVAILABLE_POLICIES = ['basic', 'brain', 'random', 'random_conservative', 'player']
 
 
 class Policy(ABC):
@@ -99,7 +101,17 @@ class BasicPolicy(Policy):
         }
 
 
-def get_policy(policy: str) -> Policy:
+class BrainPolicy(Policy):
+    """Poll actions from a deployed brain."""
+    def __init__(self, host, port):
+        self.base_url = f'http://{host}:{port}'
+
+    def step(self, state):
+        response = requests.get(f'{self.base_url}/v1/prediction', json=state)
+        return response.json()
+
+
+def get_policy(policy: str, host, port) -> Policy:
     if policy == 'random':
         return RandomPolicy((0, 1, 2))
     elif policy == 'random_conservative':
@@ -108,6 +120,8 @@ def get_policy(policy: str) -> Policy:
         return PlayerPolicy()
     elif policy == 'basic':
         return BasicPolicy()
+    elif policy == 'brain':
+        return BrainPolicy(host, port)
     else:
         raise ValueError(f'Policy {policy} not found.')
 
@@ -142,9 +156,9 @@ def get_mean_reward(results):
     return reward / total
 
 
-def evaluate_policy(n_games, policy_name: str):
+def evaluate_policy(n_games, policy_name: str, host: str, port: int):
     """Evaluate policy ``policy_name`` by playing ``n_games."""
-    policy = get_policy(policy_name)
+    policy = get_policy(policy_name, host=host, port=port)
     print(f'Using {policy_name} policy.')
 
     model = SimulatorModel()

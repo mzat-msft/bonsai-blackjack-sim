@@ -16,6 +16,10 @@ parser = argparse.ArgumentParser(description="Run a simulation")
 parser.add_argument('-p', '--policy', choices=AVAILABLE_POLICIES)
 parser.add_argument('-e', '--episodes', type=int, default=100)
 parser.add_argument('-v', '--verbose', action='store_true', default=False)
+parser.add_argument(
+    '--host', type=str, default='localhost', help='Host of deployed brain'
+)
+parser.add_argument('--port', type=int, default=5000, help='Port of deployed brain')
 
 
 class BonsaiConnector:
@@ -120,7 +124,7 @@ def run_interface(verbose):
 def main():
     args = parser.parse_args()
     if args.policy:
-        evaluate_policy(args.episodes, args.policy)
+        evaluate_policy(args.episodes, args.policy, host=args.host, port=args.port)
     else:
         run_interface(args.verbose)
 
