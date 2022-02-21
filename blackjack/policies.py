@@ -1,6 +1,7 @@
 """Policies that can be evaluated in blackjack."""
 import collections
 import random
+import string
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
 
@@ -103,12 +104,23 @@ class BasicPolicy(Policy):
 
 class BrainPolicy(Policy):
     """Poll actions from a deployed brain."""
-    def __init__(self, host, port):
+    def __init__(self, host, port, *, concept_name):
         self.base_url = f'http://{host}:{port}'
+        # A client_id is important for keeping brain memory consistent
+        # for the same client
+        self.client_id = ''.join(
+            random.choices(string.ascii_letters + string.digits, k=10)
+        )
+        self.concept = concept_name
 
     def step(self, state):
-        response = requests.get(f'{self.base_url}/v1/prediction', json=state)
-        return response.json()
+        payload = {'state': state}
+        response = requests.post(
+            f'{self.base_url}/v2/clients/{self.client_id}/predict', json=payload
+        )
+        if response.status_code != 200:
+            raise ValueError(response.content)
+        return response.json()['concepts'][self.concept]['action']
 
 
 def get_policy(policy: str, host, port) -> Policy:
@@ -121,7 +133,7 @@ def get_policy(policy: str, host, port) -> Policy:
     elif policy == 'basic':
         return BasicPolicy()
     elif policy == 'brain':
-        return BrainPolicy(host, port)
+        return BrainPolicy(host, port, concept_name='PlayBlackjack')
     else:
         raise ValueError(f'Policy {policy} not found.')
 
