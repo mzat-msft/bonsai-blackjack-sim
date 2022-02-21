@@ -50,7 +50,13 @@ graph (input: ObservableState): SimAction {
                 avoid Bust:
                     SimState.player in Goal.RangeAbove(22)
                 maximize Blackjack:
-                    SimState.player in Goal.Range(12, 21)
+                    SimState.player in Goal.RangeAbove(SimState.dealer)
+                reach End:
+                    SimState.result in Goal.RangeAbove(0)
+                avoid Lose:
+                    SimState.result in Goal.Range(0.99, 1.01)
+                maximize DealerBust:
+                    SimState.dealer in Goal.RangeAbove(22)
             }
         }
     }

@@ -47,4 +47,4 @@ other defining concepts with goals.
 | Random conservative          | -0.390      |
 | Basic strategy               | -0.059      |
 | Bonsai brain - reward        | -0.057      |
-| Bonsai brain - goal          | -0.185      |
+| Bonsai brain - goal          | -0.190      |
