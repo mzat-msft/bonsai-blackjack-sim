@@ -1,4 +1,6 @@
 # Inkling for teaching a brain to play blackjack
+# WARNING: The brain does not learn to play blackjack.
+#          It just outputs STAY at every step.
 inkling "2.0"
 
 # State provided by the simulator
