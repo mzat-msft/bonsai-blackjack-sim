@@ -1,5 +1,6 @@
 """Policies that can be evaluated in blackjack."""
 import collections
+import itertools
 import random
 import string
 from abc import ABC, abstractmethod
@@ -7,7 +8,7 @@ from collections.abc import Sequence
 
 import requests
 
-from blackjack.blackjack import Hand, SimulatorModel
+from blackjack.blackjack import Card, Hand, SimulatorModel
 
 AVAILABLE_POLICIES = ['basic', 'brain', 'random', 'random_conservative', 'player']
 
@@ -185,3 +186,60 @@ def evaluate_policy(n_games, policy_name: str, host: str, port: int):
             print(state)
     reward = get_mean_reward(results)
     print(reward)
+
+
+def _print_chart_header(title, cols, sep):
+    print(title)
+    print('|', end=sep)
+    for col in cols:
+        print(col, end=sep)
+    print()
+
+    print('|---', end=sep)
+    for _ in cols:
+        print('---', end=sep)
+    print()
+
+
+_command_to_action = {
+    0: 'S',
+    1: 'H',
+    2: 'D',
+    3: 'Sur',
+}
+
+
+def generate_chart(host, port):
+    sep = '\t|\t'
+    brain = BrainPolicy(host, port, concept_name='PlayBlackjack')
+
+    _print_chart_header('Hard totals', range(2, 12), sep)
+
+    for player in reversed(range(8, 18)):
+        print('|', f'**{player}**', end=sep)
+        for dealer in range(2, 12):
+            state = {
+                'player': player,
+                'dealer': dealer,
+                'player_ace': 0,
+                'dealer_ace': int(dealer == 11),
+            }
+            action = brain.step(state).get('command')
+            print(_command_to_action[int(action)], end=sep)
+        print()
+    print()
+
+    _print_chart_header('Soft totals', range(2, 12), sep)
+    for card in reversed(range(2, 10)):
+        print(f'| **A, {card}**', end=sep)
+        player_hand = Hand([Card('A', 'x'), Card(str(card), 'x')])
+        for dealer in range(2, 12):
+            state = {
+                'player': player_hand.value,
+                'dealer': dealer,
+                'player_ace': int(player_hand.has_ace()),
+                'dealer_ace': int(dealer == 11),
+            }
+            action = brain.step(state).get('command')
+            print(_command_to_action[int(action)], end=sep)
+        print()

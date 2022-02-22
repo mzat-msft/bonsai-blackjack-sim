@@ -9,7 +9,7 @@ from microsoft_bonsai_api.simulator.generated.models import (
     SimulatorInterface, SimulatorState)
 
 from blackjack.blackjack import SimulatorModel
-from blackjack.policies import AVAILABLE_POLICIES, evaluate_policy
+from blackjack.policies import AVAILABLE_POLICIES, evaluate_policy, generate_chart
 
 
 parser = argparse.ArgumentParser(description="Run a simulation")
@@ -20,6 +20,10 @@ parser.add_argument(
     '--host', type=str, default='localhost', help='Host of deployed brain'
 )
 parser.add_argument('--port', type=int, default=5000, help='Port of deployed brain')
+parser.add_argument(
+    '--generate-chart', action='store_true', default=False,
+    help='Generate a strategy chart from deployed brain',
+)
 
 
 class BonsaiConnector:
@@ -125,6 +129,8 @@ def main():
     args = parser.parse_args()
     if args.policy:
         evaluate_policy(args.episodes, args.policy, host=args.host, port=args.port)
+    elif args.generate_chart:
+        generate_chart(args.host, args.port)
     else:
         run_interface(args.verbose)
 

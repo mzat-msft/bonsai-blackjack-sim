@@ -48,3 +48,36 @@ other defining concepts with goals.
 | Basic strategy               | -0.059      |
 | Bonsai brain - reward        | -0.057      |
 | Bonsai brain - goal          | -0.190      |
+
+
+## Strategy Chart
+
+Once we train a brain with Bonsai, we can generate a strategy chart which shows
+us the different moves that the brain suggests for a particular game
+configuration.
+
+### Hard totals
+|       |       2       |       3       |       4       |       5       |       6       |       7       |       8       |       9       |       10      |       11      |
+|---    |       ---     |       ---     |       ---     |       ---     |       ---     |       ---     |       ---     |       ---     |       ---     |       ---     |
+| **17**        |       S       |       S       |       S       |       S       |       S       |       S       |       S       |       S       |       S       |       S       |
+| **16**        |       S       |       S       |       S       |       S       |       S       |       S       |       S       |       S       |       S       |       S       |
+| **15**        |       S       |       S       |       S       |       S       |       S       |       S       |       S       |       S       |       S       |       H       |
+| **14**        |       S       |       S       |       S       |       S       |       S       |       S       |       S       |       S       |       S       |       H       |
+| **13**        |       S       |       S       |       S       |       S       |       S       |       S       |       S       |       H       |       H       |       H       |
+| **12**        |       D       |       S       |       S       |       S       |       S       |       S       |       H       |       H       |       H       |       H       |
+| **11**        |       D       |       S       |       D       |       D       |       D       |       D       |       D       |       D       |       H       |       H       |
+| **10**        |       D       |       D       |       D       |       D       |       D       |       D       |       D       |       H       |       H       |       H       |
+| **9** |       D       |       D       |       D       |       D       |       S       |       D       |       H       |       H       |       H       |       H       |
+| **8** |       S       |       S       |       S       |       S       |       S       |       H       |       H       |       H       |       H       |       H       |
+
+### Soft totals
+|       |       2       |       3       |       4       |       5       |       6       |       7       |       8       |       9       |       10      |       11      |
+|---    |       ---     |       ---     |       ---     |       ---     |       ---     |       ---     |       ---     |       ---     |       ---     |       ---     |
+| **A, 9**      |       S       |       S       |       S       |       S       |       S       |       S       |       S       |       S       |       S       |       S       |
+| **A, 8**      |       S       |       S       |       S       |       S       |       S       |       S       |       S       |       S       |       S       |       S       |
+| **A, 7**      |       S       |       S       |       S       |       S       |       S       |       S       |       S       |       S       |       S       |       S       |
+| **A, 6**      |       S       |       S       |       S       |       S       |       D       |       S       |       S       |       H       |       S       |       H       |
+| **A, 5**      |       S       |       S       |       S       |       D       |       D       |       D       |       H       |       S       |       H       |       H       |
+| **A, 4**      |       S       |       S       |       S       |       D       |       D       |       H       |       S       |       H       |       H       |       H       |
+| **A, 3**      |       S       |       S       |       S       |       D       |       D       |       H       |       H       |       H       |       H       |       H       |
+| **A, 2**      |       S       |       S       |       D       |       D       |       S       |       H       |       H       |       H       |       H       |       H       |
