@@ -15,6 +15,8 @@ type SimState {
     player_ace: number <0, 1,>,
     # Whether dealer has aces.
     dealer_ace: number <0, 1,>,
+    # Whether first step of episode
+    first_step: number <0, 1,>,
 }
 
 # Remove result from state as it is useless for the brain
@@ -27,10 +29,11 @@ type ObservableState {
     player_ace: number <0, 1,>,
     # Whether dealer has aces.
     dealer_ace: number <0, 1,>,
+    # Whether first step of episode
+    first_step: number <0, 1,>,
 }
 
 using Math
-using Goal
 
 
 # 0 -> Stay, 1 -> Hit, 2 -> Double
@@ -74,12 +77,23 @@ function Terminal(obs: SimState) {
     return true
 }
 
+
+function MaskFunction(s: ObservableState) {
+    if (not s.first_step) {
+        return constraint SimAction {command: number<mask [1, 1, 0]>}
+    }
+    else {
+        return constraint SimAction {}
+    }
+}
+
 graph (input: ObservableState): SimAction {
     concept PlayBlackjack(input): SimAction {
         curriculum {
             source Simulator
             reward Reward
             terminal Terminal
+            mask MaskFunction
         }
     }
 }

@@ -30,6 +30,7 @@ import itertools
 import json
 import random
 import reprlib
+import traceback
 from pathlib import Path
 from typing import Iterable, List
 
@@ -163,6 +164,7 @@ class Blackjack:
         self.deck = Deck()
         self.player_hand = Hand(self.deck.pick(2))
         self.dealer_hand = Hand(self.deck.pick())
+        self.first_step = True
 
     @property
     def state(self):
@@ -175,6 +177,7 @@ class Blackjack:
             'player_hand': str(self.player_hand),
             'dealer_hand': str(self.dealer_hand),
             'surrender': self.surrender,
+            'first_step': int(self.first_step),
         }
 
     def win(self):
@@ -216,6 +219,8 @@ class Blackjack:
         if action == 'hit':
             self.player_pick()
         elif action == 'double':
+            if not self.first_step:
+                raise RuntimeError('Can only double-down at first step')
             self.double = True
             self.player_pick()
             self.finalize_game()
@@ -224,6 +229,7 @@ class Blackjack:
         elif action == 'surrender':
             self.surrender = True
             self.finalize_game()
+        self.first_step = False
 
 
 action_mapping = {
@@ -271,5 +277,13 @@ class SimulatorModel:
         except GameSurrenderException:
             return {
                 'result': 0,
+                **self.blackjack.state,
+            }
+        except Exception:
+            print('Exception raised.')
+            traceback.print_exc()
+            return {
+                'result': -2,
+                'halted': True,
                 **self.blackjack.state,
             }
