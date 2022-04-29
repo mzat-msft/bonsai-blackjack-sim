@@ -55,6 +55,8 @@ other defining concepts with goals.
 Once we train a brain with Bonsai, we can generate a strategy chart which shows
 us the different moves that the brain suggests for a particular game
 configuration.
+Rows in the following table represents the value of the player's hand, while
+columns represent the dealer's hand.
 
 ### Hard totals
 |       |       2       |       3       |       4       |       5       |       6       |       7       |       8       |       9       |       10      |       11      |
