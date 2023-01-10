@@ -9,7 +9,7 @@ In order to run the simulation locally you must install the dependencies in
 `requirements.txt` and then run
 
 ```bash
-python main.py
+python -m blackjack
 ```
 
 Please remember to set in your shell environment the variables
@@ -21,7 +21,7 @@ It is possible to evaluate how well some predefined policies behave with the
 simulation with the following command
 
 ```bash
-python main.py -p policy_name -e number_of_episodes
+python -m blackjack -p policy_name -e number_of_episodes
 ```
 
 Currently the following policies are implemented:

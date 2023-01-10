@@ -9,4 +9,4 @@ RUN pip install -Ur requirements.txt
 COPY . /src
 
 
-ENTRYPOINT ["python", "main.py"]
+ENTRYPOINT ["python", "-m", "blackjack"]
