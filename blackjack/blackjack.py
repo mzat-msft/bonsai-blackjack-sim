@@ -30,9 +30,12 @@ import itertools
 import json
 import random
 import reprlib
+import time
 import traceback
 from pathlib import Path
 from typing import Iterable, List
+
+from bonsai_connector.connector import BonsaiEventType
 
 
 @dataclasses.dataclass
@@ -251,6 +254,20 @@ class SimulatorModel:
             'result': -1,
             **self.blackjack.state
         }
+
+    def dispatch_event(self, next_event):
+        if next_event.event_type == BonsaiEventType.EPISODE_START:
+            return self.reset(next_event.event_content)
+        elif next_event.event_type == BonsaiEventType.EPISODE_STEP:
+            return self.step(next_event.event_content)
+        elif next_event.event_type == BonsaiEventType.EPISODE_FINISH:
+            return {'reason': next_event.event_content}
+        elif next_event.event_type == BonsaiEventType.IDLE:
+            return
+        else:
+            raise RuntimeError(
+                f"Unexpected BonsaiEventType. Got {next_event.event_type}"
+            )
 
     def step(self, action):
         try:

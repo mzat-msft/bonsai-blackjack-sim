@@ -1,2 +1,2 @@
-microsoft-bonsai-api==0.1.3
+git+https://github.com/mzat-msft/bonsai-connector
 requests
