@@ -169,6 +169,11 @@ class Blackjack:
         self.dealer_hand = Hand(self.deck.pick())
         self.first_step = True
 
+    def get_mask(self):
+        if self.first_step:
+            return [1, 1, 1]
+        return [1, 1, 0]
+
     @property
     def state(self):
         return {
@@ -180,7 +185,7 @@ class Blackjack:
             'player_hand': str(self.player_hand),
             'dealer_hand': str(self.dealer_hand),
             'surrender': self.surrender,
-            'first_step': int(self.first_step),
+            'mask': self.get_mask()
         }
 
     def win(self):

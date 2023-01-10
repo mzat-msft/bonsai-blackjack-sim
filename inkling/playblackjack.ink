@@ -15,8 +15,8 @@ type SimState {
     player_ace: number <0, 1,>,
     # Whether dealer has aces.
     dealer_ace: number <0, 1,>,
-    # Whether first step of episode
-    first_step: number <0, 1,>,
+    # Mask.
+    mask: number[3],
 }
 
 # Remove result from state as it is useless for the brain
@@ -29,8 +29,8 @@ type ObservableState {
     player_ace: number <0, 1,>,
     # Whether dealer has aces.
     dealer_ace: number <0, 1,>,
-    # Whether first step of episode
-    first_step: number <0, 1,>,
+    # Mask.
+    mask: number[3],
 }
 
 using Math
@@ -79,12 +79,7 @@ function Terminal(obs: SimState) {
 
 
 function MaskFunction(s: ObservableState) {
-    if (not s.first_step) {
-        return constraint SimAction {command: number<mask [1, 1, 0]>}
-    }
-    else {
-        return constraint SimAction {}
-    }
+    return constraint SimAction {command: number<mask s.mask>}
 }
 
 graph (input: ObservableState): SimAction {
